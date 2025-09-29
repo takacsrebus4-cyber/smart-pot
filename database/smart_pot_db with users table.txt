@@ -1,0 +1,54 @@
+create database test
+character set utf8;
+
+use test;
+
+create table if not exists plants_data(
+  name VARCHAR(100) NOT NULL primary key,
+  scientific_name VARCHAR(150) NOT NULL,
+  min_light INT NOT NULL,
+  max_light INT NOT NULL,
+  min_moisture INT NOT NULL,
+  max_moisture INT NOT NULL,
+  min_temperature INT NOT NULL,
+  max_temperature INT NOT NULL,
+  min_humidity INT NOT NULL,
+  max_humidity INT NOT NULL
+);
+
+create table if not exists users(
+  id INT NOT NULL AUTO_INCREMENT primary key,
+  name VARCHAR(50) NOT NULL,
+);
+
+create table if not exists current_plants(
+  id INT NOT NULL AUTO_INCREMENT primary key,
+  plant_name VARCHAR(100) NOT NULL,
+  user_id INT NOT NULL,
+  constraint fk_current_plants_plants_data
+	foreign key (plant_name) references plants_data(name),
+  constraint fk_current_plants_users
+	foreign key (user_id) references users(user_id)
+);
+
+create table if not exists weekly_data(
+  id INT NOT NULL AUTO_INCREMENT primary key,
+  light INT NOT NULL,
+  moisture INT NOT NULL,
+  temperature INT NOT NULL,
+  humidity INT NOT NULL,
+  current_plants_id INT NOT NULL,
+  constraint fk_weekly_data_current_plants
+	foreign key (current_plants_id) references current_plants(id)
+);
+
+create table if not exists current_data(
+  id INT NOT NULL AUTO_INCREMENT primary key,
+  light INT NOT NULL,
+  moisture INT NOT NULL,
+  temperature INT NOT NULL,
+  humidity INT NOT NULL,
+  current_plants_id INT NOT NULL,
+  constraint fk_current_data_current_plants
+	foreign key (current_plants_id) references current_plants(id)
+);

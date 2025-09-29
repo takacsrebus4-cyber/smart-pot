@@ -1,1 +1,0 @@
-Smart pot szakdolgozat

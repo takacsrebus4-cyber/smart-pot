@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="scientific_name" placeholder="Scientific Name">
+    <input type="text" id="max_humidity" placeholder="max_humidity">
+    <input type="text" id="min_humidity" placeholder="min_humidity">
+    <input type="text" id="max_light" placeholder="max_light">
+    <input type="text" id="min_light" placeholder="min_light">
+    <input type="text" id="max_moisture" placeholder="max_moisture">
+    <input type="text" id="min_moisture" placeholder="min_moisture">
+    <input type="text" id="max_temperature" placeholder="max_temperature">
+    <input type="text" id="min_temperature" placeholder="min_temperature">
+    <button id="button">Submit</button>
+    
+    <script>
+        document.getElementById("button").addEventListener("click", async () => {
+            const name = document.getElementById("name").value;
+            const scientific_name = document.getElementById("scientific_name").value;
+            const max_humidity = document.getElementById("max_humidity").value;
+            const min_humidity = document.getElementById("min_humidity").value;
+            const max_light = document.getElementById("max_light").value;
+            const min_light = document.getElementById("min_light").value;
+            const max_moisture = document.getElementById("max_moisture").value;
+            const min_moisture = document.getElementById("min_moisture").value;
+            const max_temperature = document.getElementById("max_temperature").value;
+            const min_temperature = document.getElementById("min_temperature").value;
+            const data = {
+                name: name,
+                scientific_name : scientific_name,
+                max_humidity : max_humidity,
+                min_humidity : min_humidity,
+                max_light : max_light,
+                min_light : min_light,
+                max_moisture : max_moisture,
+                min_moisture : min_moisture,
+                max_temperature : max_temperature,
+                min_temperature : min_temperature
+            };
+            const response = await fetch('http://localhost:3000/upload/plant', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            console.log(response)
+        });
+
+    </script>
+
+</body>
+</html>
