@@ -3,23 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Smart Pot - CG8WXK</title>
+    <h1>Welcome to Plant Upload</h1>
+    <p>On this page you can add a new plant to the smart pot database you want to keep an eye on.<br>
+        Enter the necessary information below and click the "Submit" button.</p>
+    <style>
+        body {
+            background-image: url('C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/images/leaves-9244714.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-color: rgba(255,255,255,0.2);
+            background-blend-mode: lighten;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto auto auto auto auto;
+            grid-gap: 10px;
+            padding: 10px;
+        }
+        .grid-container > div {
+            text-align: left;
+            padding: 20px 0;
+            font-size: 20px;
+        }
+        .submit{
+            grid-column-start: 3;
+            grid-row-start: 2;
+            text-align: right;
+            font-size: 30px;
+        } 
+        h1{
+            text-align: center;
+            font-size: 40px;
+        }
+        p{
+            text-align: center;
+            font-size: 20px;
+        }
+    </style> 
 </head>
 <body>
-    <input type="text" id="name" placeholder="Name">
-    <input type="text" id="scientific_name" placeholder="Scientific Name">
-    <input type="text" id="max_humidity" placeholder="max_humidity">
-    <input type="text" id="min_humidity" placeholder="min_humidity">
-    <input type="text" id="max_light" placeholder="max_light">
-    <input type="text" id="min_light" placeholder="min_light">
-    <input type="text" id="max_moisture" placeholder="max_moisture">
-    <input type="text" id="min_moisture" placeholder="min_moisture">
-    <input type="text" id="max_temperature" placeholder="max_temperature">
-    <input type="text" id="min_temperature" placeholder="min_temperature">
-    <button id="button">Submit</button>
+    <form action="/action_page.php">
+    <div class="grid-container">
+        <div><label for="name">Name:</label><br>
+        <input type="text" id="name" placeholder="Name"><br><br>
+        <label for="scientific_name">Scientific Name:</label><br>
+        <input type="text" id="scientific_name" placeholder="Scientific Name"></div>
+
+        <div><label for="max_light">Max Light:</label><br>
+        <input type="text" id="max_light" placeholder="Max Light"><br><br>
+        <label for="min_light">Min Light:</label><br>
+        <input type="text" id="min_light" placeholder="Min Light"></div>
+
+        <div><label for="max_moisture">Max Moisture:</label><br>
+        <input type="text" id="max_moisture" placeholder="Max Moisture"><br><br>
+        <label for="min_moisture">Min Moisture:</label><br>
+        <input type="text" id="min_moisture" placeholder="Min Moisture"></div>
+
+        <div><label for="max_temperature">Max Temperature:</label><br>
+        <input type="text" id="max_temperature" placeholder="Max Temperature"><br><br>
+        <label for="min_temperature">Min Temperature:</label><br>
+        <input type="text" id="min_temperature" placeholder="Min Temperature"></div>
+
+        <div><label for="max_humidity">Max Humidity:</label><br>
+        <input type="text" id="max_humidity" placeholder="Max Humidity"><br><br>
+        <label for="min_humidity">Min Humidity:</label><br>
+        <input type="text" id="min_humidity" placeholder="Min Humidity"></div>
+
+        <div class="submit"><input type="submit" value="Submit"></div>
+    </div>
+    </form>
     
     <script>
-        document.getElementById("button").addEventListener("click", async () => {
+        document.getElementById("submit").addEventListener("click", async () => {
             const name = document.getElementById("name").value;
             const scientific_name = document.getElementById("scientific_name").value;
             const max_humidity = document.getElementById("max_humidity").value;
