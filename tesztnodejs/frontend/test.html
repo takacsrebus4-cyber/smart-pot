@@ -1,20 +1,257 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
-body {
-  background-image: url('C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/images/leaves-9244714.jpg');
-  background-repeat: no-repeat;
-  background-attachment: fixed;  
-  background-size: cover;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantMonitor Pro | Smart Plant Monitoring</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+       
+    </style>
 </head>
 <body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>PlantMonitor Pro</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-leaf"></i> My Plants</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> Help</a></li>
+            </ul>
+        </aside>
 
-<h2>Background Cover</h2>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1>Plant Dashboard</h1>
+                <div class="user-info">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle fa-2x"></i>
+                    </div>
+                </div>
+            </header>
 
-<p>Set the background-size property to "cover" and the background image will cover the entire element, in this case the body element.</p>
+            <!-- Stats Overview -->
+            <section class="stats-overview">
+                <div class="stat-card">
+                    <i class="fas fa-leaf fa-2x" style="color: var(--primary-green);"></i>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Total Plants</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-tint fa-2x" style="color: var(--primary-green);"></i>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Need Watering</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-temperature-high fa-2x" style="color: var(--primary-green);"></i>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Temperature Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-heart fa-2x" style="color: var(--primary-green);"></i>
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">Healthy Plants</div>
+                </div>
+            </section>
 
+            <!-- Plants Grid -->
+            <section>
+                <h2 class="section-title">My Plants</h2>
+                <div class="plants-grid">
+                    <!-- Plant Card 1 -->
+                    <div class="plant-card">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Monstera Deliciosa</h3>
+                            <span class="plant-status status-healthy">Healthy</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value">72°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">65%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
+                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
+                        </div>
+                    </div>
+
+                    <!-- Plant Card 2 -->
+                    <div class="plant-card caution">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Snake Plant</h3>
+                            <span class="plant-status status-caution">Needs Water</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value">68°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">60%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill caution" style="width: 25%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
+                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
+                        </div>
+                    </div>
+
+                    <!-- Plant Card 3 -->
+                    <div class="plant-card warning">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Fiddle Leaf Fig</h3>
+                            <span class="plant-status status-warning">High Temp</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value" style="color: var(--warning);">89°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">75%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
+                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
+                        </div>
+                    </div>
+
+                    <!-- Plant Card 4 -->
+                    <div class="plant-card">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Peace Lily</h3>
+                            <span class="plant-status status-healthy">Healthy</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value">70°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">80%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
+                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section class="analytics-section">
+                <h2 class="section-title">Plant Health Analytics</h2>
+                <div class="chart-container">
+                    <p><i class="fas fa-chart-bar fa-3x mb-2"></i></p>
+                    <p>Plant Health Metrics Visualization</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Simple script for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Water button functionality
+            const waterButtons = document.querySelectorAll('.btn-secondary');
+            waterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const plantCard = this.closest('.plant-card');
+                    const plantName = plantCard.querySelector('.plant-name').textContent;
+                    alert(`Watering scheduled for ${plantName}`);
+                    
+                    // Simulate watering effect
+                    const progressFill = plantCard.querySelector('.progress-fill');
+                    progressFill.style.width = '85%';
+                    
+                    // Update status if it was caution
+                    if (plantCard.classList.contains('caution')) {
+                        plantCard.classList.remove('caution');
+                        const status = plantCard.querySelector('.plant-status');
+                        status.textContent = 'Healthy';
+                        status.className = 'plant-status status-healthy';
+                    }
+                });
+            });
+            
+            // Notification bell
+            const notificationIcon = document.querySelector('.notification-icon');
+            notificationIcon.addEventListener('click', function() {
+                alert('You have 3 alerts:\n- Snake Plant needs water\n- Fiddle Leaf Fig temperature high\n- Calathea humidity low');
+            });
+        });
+    </script>
 </body>
 </html>

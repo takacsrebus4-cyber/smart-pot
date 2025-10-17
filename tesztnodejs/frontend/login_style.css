@@ -1,0 +1,172 @@
+
+:root {
+  --primary-green: #2d5a27;
+  --secondary-green: #4a7c59;
+  --accent-green: #8bb174;
+  --light-green: #e8f5e8;
+  --dark-text: #2c3e50;
+  --light-text: #7f8c8d;
+  --white: #ffffff;
+  --gray-bg: #f8f9fa;
+  --warning: #e74c3c;
+  --caution: #f39c12;
+  --success: #27ae60;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+        
+body {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+        
+.login-container {
+  background-color: var(--gray-bg);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 30px;
+  transition: transform 0.3s ease;
+}
+        
+.login-container:hover {
+  transform: translateY(-5px);
+}
+        
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+        
+.logo h1 {
+  color: var(--primary-green);
+  font-size: 28px;
+  margin-bottom: 5px;
+  }
+        
+.logo p {
+  color: var(--secondary-green)6;
+  font-size: 14px;
+}
+        
+.input-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+        
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary-green);
+  font-weight: 500;
+}
+        
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+        
+.input-group input:focus {
+  border-color: var(--primary-green);
+  box-shadow: var(--shadow);
+  outline: none;
+}
+        
+.remember-forgot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+        
+.remember-me {
+  display: flex;
+  align-items: center;
+}
+        
+.remember-me input {
+  margin-right: 5px;
+}
+        
+.forgot-password {
+  color: var(--success);
+  text-decoration: none;
+}
+        
+.forgot-password:hover {
+  text-decoration: underline;
+}
+        
+.login-btn {
+  background:  var(--primary-green);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+        
+.login-btn:hover {
+  opacity: 0.9;
+}
+        
+.signup-link {
+  text-align: center;
+  margin-top: 25px;
+  color: #666;
+  font-size: 14px;
+}
+        
+.signup-link a {
+  color: var(--success);
+  text-decoration: none;
+  font-weight: 500;
+}
+        
+.signup-link a:hover {
+  text-decoration: underline;
+}
+        
+.error-message {
+  color: var(--warning);
+  font-size: 14px;
+  margin-top: 5px;
+  display: none;
+}
+        
+@media (max-width: 480px) {
+  .login-container {
+    padding: 30px 20px;
+  }
+            
+  .remember-forgot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+            
+  .forgot-password {
+    margin-top: 10px;
+  }
+}

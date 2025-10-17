@@ -1,0 +1,5 @@
+const jwt = require("jsonwebtoken")
+function generateAccessToken(user) {
+    return jwt.sign(user, "nagyon titkos", { expiresIn: "15m" })
+}
+module.exports = generateAccessToken
