@@ -1,22 +1,22 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const mysql = require('mysql2');
-const generateAccessToken = require("./genToken")
+const generateAccessToken = require("./genAccessToken.js");
+const generateRefreshToken = require("./genRefreshToken.js");
+require("dotenv").config();
 const app = express();
 const port = 3000;
 const cors = require('cors');
 const { table, Console } = require("console");
 app.use(cors());
-
 app.use(express.json());
-app.use(
-  express.urlencoded({
+app.use(express.urlencoded({
     extended: true,
   })
 );
 
 const db = mysql.createPool({
-  connectionLimit: 10,
+  //connectionLimit: 10,
   host: "127.0.0.1",
   user: "rebi",
   password: "rebi2001",
@@ -120,15 +120,16 @@ app.post("/login", async (req, res) => {
       else {
         const hashedPassword = result[0].password;
         if (await bcrypt.compare(password, hashedPassword)) {
-          console.log("---------> Login Successful")
+          console.log("---------> Login Successful");
           const token = generateAccessToken({ user: username });
-          console.log("Generated Token: ", token);
-          res.json({accessToken: token})
+          console.log("Generated Access Token: ", token);
+          const refreshToken = generateRefreshToken ({user: username});
+          console.log("Generated Refresh Token: ", refreshToken);
+          res.json({accessToken: token});
 
         }
         else {
           console.log("---------> Password Incorrect")
-          res.json({ ok: false })
         }
       }
     });
@@ -137,4 +138,28 @@ app.post("/login", async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
+});
+
+//REFRESH TOKEN API
+app.post("/refreshToken", (req,res) => {
+  if (!refreshTokens.includes(req.body.token)){
+    res.status(400).send("Refresh Token Invalid")
+  }
+
+  refreshTokens = refreshTokens.filter( (c) => c != req.body.token)
+  //remove the old refreshToken from the refreshTokens list
+
+  const accessToken = generateAccessToken ({user: req.body.name})
+  const refreshToken = generateRefreshToken ({user: req.body.name})
+//generate new accessToken and refreshTokens
+
+  res.json({accessToken: accessToken, refreshToken: refreshToken})
+});
+
+app.delete("/logout", (req,res)=>{
+
+  refreshTokens = refreshTokens.filter( (c) => c != req.body.token)
+  //remove the old refreshToken from the refreshTokens list
+
+  res.status(204).send("Logged out!")
 });
