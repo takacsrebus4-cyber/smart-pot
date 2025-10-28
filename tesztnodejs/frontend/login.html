@@ -59,6 +59,9 @@
                 }
                 else {
                     console.log(response.accessToken)
+                    localStorage.clear();
+                    localStorage.setItem("accessToken", JSON.stringify(response.accessToken));
+                    localStorage.setItem("refreshToken", JSON.stringify(response.refreshToken));
                     window.location.href = "./test.html";
                 }
             });

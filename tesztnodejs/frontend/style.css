@@ -1,324 +1,4 @@
 /* === CSS Variables for Consistent Theming === */
-:root {
-  --primary-green: #2d5a27;
-  --secondary-green: #4a7c59;
-  --accent-green: #8bb174;
-  --light-green: #e8f5e8;
-  --dark-text: #2c3e50;
-  --light-text: #7f8c8d;
-  --white: #ffffff;
-  --gray-bg: #f8f9fa;
-  --warning: #e74c3c;
-  --caution: #f39c12;
-  --success: #27ae60;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --radius: 12px;
-  --transition: all 0.3s ease;
-}
-
-/* === Base Styles === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
-  color: var(--dark-text);
-  background-color: var(--gray-bg);
-
-  
-  align-items: center;
-  min-height: 100vh;
-  
-}
-
-/* === Layout Components === */
-.dashboard-container {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  min-height: 100vh;
-}
-
-/* === Sidebar Navigation === */
-.sidebar {
-  background: var(--primary-green);
-  color: var(--white);
-  padding: 2rem 1rem;
-  position: fixed;
-  width: 250px;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.nav-links {
-  list-style: none;
-}
-
-.nav-links li {
-  margin-bottom: 0.5rem;
-}
-
-.nav-links a {
-  color: var(--white);
-  text-decoration: none;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: var(--transition);
-}
-
-.nav-links a:hover,
-.nav-links a.active {
-  background: var(--secondary-green);
-}
-
-/* === Main Content Area === */
-.main-content {
-  grid-column: 2;
-  padding: 2rem;
-}
-
-.header {
-  display: flex;
-  justify-content: between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* === Plant Grid Layout === */
-.plants-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-/* === Plant Cards === */
-.plant-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-  border-left: 4px solid var(--success);
-}
-
-.plant-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-}
-
-.plant-card.warning {
-  border-left-color: var(--warning);
-}
-
-.plant-card.caution {
-  border-left-color: var(--caution);
-}
-
-.plant-header {
-  display: flex;
-  justify-content: between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.plant-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.plant-status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.status-healthy {
-  background: var(--light-green);
-  color: var(--success);
-}
-
-.status-warning {
-  background: #ffeaea;
-  color: var(--warning);
-}
-
-/* === Metrics Grid === */
-.plant-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin: 1rem 0;
-}
-
-.metric {
-  text-align: center;
-  padding: 0.75rem;
-  background: var(--gray-bg);
-  border-radius: var(--radius);
-}
-
-.metric-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-green);
-}
-
-.metric-label {
-  font-size: 0.875rem;
-  color: var(--light-text);
-}
-
-/* === Progress Bars === */
-.progress-bar {
-  height: 8px;
-  background: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 0.5rem 0;
-}
-
-.progress-fill {
-  height: 100%;
-  background: var(--success);
-  transition: width 0.3s ease;
-}
-
-/* === Action Buttons === */
-.btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: var(--radius);
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-primary {
-  background: var(--primary-green);
-  color: var(--white);
-}
-
-.btn-primary:hover {
-  background: var(--secondary-green);
-}
-
-.btn-secondary {
-  background: var(--light-green);
-  color: var(--primary-green);
-}
-
-/* === Charts/Graphs Container === */
-.analytics-section {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  margin-top: 2rem;
-}
-
-.section-title {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: var(--dark-text);
-}
-
-/* === Responsive Design === */
-@media (max-width: 768px) {
-  .dashboard-container {
-    grid-template-columns: 1fr;
-  }
-  
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-  
-  .main-content {
-    grid-column: 1;
-  }
-  
-  .plants-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .plant-metrics {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* === Loading States === */
-.loading {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* === Notification Badges === */
-.notification-badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: var(--warning);
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* === Utility Classes === */
-.text-center { text-align: center; }
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mb-1 { margin-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 1rem; }
-.hidden { display: none; }
-
- /* === CSS Variables for Consistent Theming === */
         :root {
             --primary-green: #2d5a27;
             --secondary-green: #4a7c59;
@@ -707,3 +387,79 @@ body {
         .mb-1 { margin-bottom: 0.5rem; }
         .mb-2 { margin-bottom: 1rem; }
         .hidden { display: none; }
+
+
+/* Float cancel and delete buttons and add an equal width */
+.yesbtn, .nobtn {
+  float: left;
+  width: 50%;
+  height: 30px;
+}
+
+/* Add a color to the "yes" button */
+.yesbtn {
+  background-color: #27ae60;
+  color: black;
+}
+
+/* Add a color to the "no" button */
+.nobtn {
+  background-color: #e74c3c;
+}
+
+/* Add padding and center-align text to the container */
+.container {
+  padding: 16px;
+  text-align: center;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.6);
+  padding-top: 50px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto 20% auto; /* 5% from the top, 15% from the bottom and centered */
+  align-self: center;
+  border: 1px solid #888;
+  width: 40%; /* Could be more or less, depending on screen size */
+  height: 20%;
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.6s;
+  animation-name: animatetop;
+  animation-duration: 0.6s;
+}
+
+.container h1 {
+  color: var(--primary-green);
+  font-size: 22px;
+  margin-bottom: 5px;
+  }
+        
+.container p {
+  color: var(--secondary-green);
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0} 
+  to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
