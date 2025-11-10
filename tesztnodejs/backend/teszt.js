@@ -8,7 +8,7 @@ const app = express();
 const port = 3000;
 let refreshTokens = [];
 const userinfo = [];
-//let userIndex = 0;
+let username = null;
 const cors = require('cors');
 const { table, Console } = require("console");
 app.use(cors());
@@ -18,7 +18,7 @@ app.use(express.urlencoded({
 })
 );
 
-console.log("port:", process.env.PORT);
+//console.log("port:", process.env.PORT);
 
 const db = mysql.createPool({
   //connectionLimit: 10,
@@ -115,7 +115,7 @@ app.post("/login", async (req, res) => {
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
     var table = "users";
-    var username = req.body.username;
+    username = req.body.username;
     var password = req.body.password;
     connection.query(`SELECT * FROM ${table} WHERE name="${username}"`, async (err, result) => {
       connection.release();
@@ -175,33 +175,30 @@ app.listen(port, () => {
 //REFRESH TOKEN API
 app.post("/refreshToken", (req, res) => {
   console.log("Refresh token request received");
-  const authHeader = req.headers["authorization"];
-  let refreshToken = authHeader.split(" ")[1];
+  let refreshToken = req.body.refreshToken;
+  const username = req.body.username;
   console.log(refreshToken);
   if (!refreshTokens.includes(refreshToken)) {
-    res.status(403).send("Refresh Token Invalid")
+    console.log("Refresh Token Invalid")
+    res.json({ accessToken: null, refreshToken: null })
   }
   else {
 
     refreshTokens = refreshTokens.filter((c) => c != refreshToken)
     //remove the old refreshToken from the refreshTokens list
 
-    const accessToken = generateAccessToken({ user: "Peti1"/*req.body.name*/ })
-    refreshToken = generateRefreshToken({ user: "Peti1"/*req.body.name*/ })
+    const accessToken = generateAccessToken({ user: username})
+    refreshToken = generateRefreshToken({ user: username})
     //generate new accessToken and refreshTokens
 
     console.log("userinfo ", userinfo);
 
     for (j = 0; j < 1; j++) {
       console.log("Checking userinfo entry:", userinfo[j]);
-      if (userinfo[j].username == "Peti1") {
+      if (userinfo[j].username == username) {
         console.log("User found in userinfo array, updating tokens.");
-        userinfo[j] = { username: "Peti1", accessToken: accessToken, refreshToken: refreshToken };
+        userinfo[j] = { username: username, accessToken: accessToken, refreshToken: refreshToken };
         console.log("Userinfo array updated:", userinfo);
-        //existingUser = true;
-        //localStorage.clear();
-        //localStorage.setItem('userinfo', JSON.stringify(userinfo));
-        //console.log("Local storage updated:", localStorage.getItem('userinfo'));
         break;
       }
     }
@@ -220,7 +217,18 @@ app.delete("/logout", (req, res) => {
 });
 
 
-app.get("/getUserinfo", (req, res) => {
+app.post("/getUserinfo", (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  res.json(userinfo[0]);
+
+  for (j = 0; j < userinfo.length; j++) {
+    if(userinfo[j].username == req.body.username) {
+      res.json(userinfo[j]);
+      break;
+    }
+  }
+});
+
+app.get("/getUsername", (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.json({username: username});
 });
