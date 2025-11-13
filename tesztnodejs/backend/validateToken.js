@@ -14,7 +14,7 @@ app.listen(/*port*/5000, ()=> {
 
 app.post("/validateToken", validateToken, (req, res)=>{
   res.set('Access-Control-Allow-Origin', '*');
-  console.log("Token is valid");
+  //console.log("Token is valid");
   res.json({tokenValid: true});
 });
 

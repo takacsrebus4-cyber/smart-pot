@@ -111,7 +111,7 @@ app.post("/upload/user", async (req, res) => {
 app.post("/login", async (req, res) => {
   let existingUser = false;
   res.set('Access-Control-Allow-Origin', '*');
-  console.log("Login request received");
+  //console.log("Login request received");
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
     var table = "users";
@@ -121,17 +121,17 @@ app.post("/login", async (req, res) => {
       connection.release();
       if (result.length == 0) {
         res.sendStatus(404);
-        console.log("---------> User not found");
+        //console.log("---------> User not found");
       }
       else {
         const hashedPassword = result[0].password;
         if (await bcrypt.compare(password, hashedPassword)) {
-          console.log("---------> Login Successful");
+          //console.log("---------> Login Successful");
           const token = generateAccessToken({ user: username });
-          console.log("Generated Access Token: ", token);
+          //console.log("Generated Access Token: ", token);
           const refreshToken = generateRefreshToken({ user: username });
           refreshTokens.push(refreshToken);
-          console.log("Generated Refresh Token: ", refreshToken);
+          //console.log("Generated Refresh Token: ", refreshToken);
           res.json({ accessToken: token });
 
 
@@ -142,9 +142,6 @@ app.post("/login", async (req, res) => {
               userinfo[j] = { username: username, accessToken: token, refreshToken: refreshToken };
               console.log("Userinfo array updated:", userinfo);
               existingUser = true;
-              //localStorage.clear();
-              //localStorage.setItem('userinfo', JSON.stringify(userinfo));
-              //console.log("Local storage updated:", localStorage.getItem('userinfo'));
               break;
             }
           }
@@ -152,16 +149,12 @@ app.post("/login", async (req, res) => {
           //If user does not exist in userinfo array, add new entry
           if (existingUser == false) {
             userinfo.push({ username: username, accessToken: token, refreshToken: refreshToken });
-            console.log("User not found in userinfo array, adding new entry.");
-            console.log("Userinfo array updated:", userinfo);
-            //localStorage.clear();
-            //localStorage.setItem('userinfo', JSON.stringify(userinfo));
-            //console.log("Local storage updated:", localStorage.getItem('userinfo'));
-            //userIndex++;
+            //console.log("User not found in userinfo array, adding new entry.");
+            //console.log("Userinfo array updated:", userinfo);
           }
         }
         else {
-          console.log("---------> Password Incorrect")
+          //console.log("---------> Password Incorrect")
         }
       }
     });
@@ -174,12 +167,10 @@ app.listen(port, () => {
 
 //REFRESH TOKEN API
 app.post("/refreshToken", (req, res) => {
-  console.log("Refresh token request received");
   let refreshToken = req.body.refreshToken;
   const username = req.body.username;
   console.log(refreshToken);
   if (!refreshTokens.includes(refreshToken)) {
-    console.log("Refresh Token Invalid")
     res.json({ accessToken: null, refreshToken: null })
   }
   else {
@@ -187,18 +178,15 @@ app.post("/refreshToken", (req, res) => {
     refreshTokens = refreshTokens.filter((c) => c != refreshToken)
     //remove the old refreshToken from the refreshTokens list
 
-    const accessToken = generateAccessToken({ user: username})
-    refreshToken = generateRefreshToken({ user: username})
+    const accessToken = generateAccessToken({ user: username })
+    refreshToken = generateRefreshToken({ user: username })
     //generate new accessToken and refreshTokens
 
-    console.log("userinfo ", userinfo);
+    refreshTokens.push(refreshToken);
 
     for (j = 0; j < 1; j++) {
-      console.log("Checking userinfo entry:", userinfo[j]);
       if (userinfo[j].username == username) {
-        console.log("User found in userinfo array, updating tokens.");
         userinfo[j] = { username: username, accessToken: accessToken, refreshToken: refreshToken };
-        console.log("Userinfo array updated:", userinfo);
         break;
       }
     }
@@ -208,20 +196,30 @@ app.post("/refreshToken", (req, res) => {
 
 });
 
-app.delete("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
 
-  refreshTokens = refreshTokens.filter((c) => c != req.body.token)
+  let logout = false;
+
+  refreshTokens = refreshTokens.filter((c) => c != req.body.refreshToken)
   //remove the old refreshToken from the refreshTokens list
 
-  res.status(204).send("Logged out!")
-});
+  for (j = 0; j < 1; j++) {
+    if (userinfo[j].username == req.body.username) {
+      userinfo.splice(j, 1);
+      logout = true;
+      break;
+    }
+  }
 
+  res.json(logout);
+
+});
 
 app.post("/getUserinfo", (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
 
   for (j = 0; j < userinfo.length; j++) {
-    if(userinfo[j].username == req.body.username) {
+    if (userinfo[j].username == req.body.username) {
       res.json(userinfo[j]);
       break;
     }
@@ -230,5 +228,5 @@ app.post("/getUserinfo", (req, res) => {
 
 app.get("/getUsername", (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  res.json({username: username});
+  res.json({ username: username });
 });

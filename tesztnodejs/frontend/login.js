@@ -16,10 +16,7 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
             alert("Helytelen bejelentkezési adatok!")
         }
         else {
-            console.log(response.accessToken)
-            //localStorage.clear();
-            //localStorage.setItem("accessToken", JSON.stringify(response.accessToken));
-            //localStorage.setItem("refreshToken", JSON.stringify(response.refreshToken));
+            //console.log(response.accessToken)
             window.location.href = "./test.html";
         }
     });
