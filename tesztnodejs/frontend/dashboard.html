@@ -21,8 +21,8 @@
                 <span>PlantMonitor Pro</span>
             </div>
             <ul class="nav-links">
-                <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="#"><i class="fas fa-leaf"></i> My Plants</a></li>
+                <li><a href="./dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="./myplants.html"><i class="fas fa-leaf"></i> My Plants</a></li>
                 <li><a href="#"><i class="fas fa-chart-line"></i> Analytics</a></li>
                 <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
                 <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
@@ -92,10 +92,6 @@
                                 <div class="progress-fill" style="width: 85%"></div>
                             </div>
                         </div>
-                        <div class="card-actions">
-                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
-                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
-                        </div>
                     </div>
 
                     <!-- Plant Card 2 -->
@@ -125,10 +121,6 @@
                             <div class="progress-bar">
                                 <div class="progress-fill" style="width: 45%"></div>
                             </div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
-                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
                         </div>
                     </div>
 
@@ -160,10 +152,6 @@
                                 <div class="progress-fill" style="width: 70%"></div>
                             </div>
                         </div>
-                        <div class="card-actions">
-                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
-                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
-                        </div>
                     </div>
 
                     <!-- Plant Card 4 -->
@@ -194,10 +182,6 @@
                                 <div class="progress-fill" style="width: 60%"></div>
                             </div>
                         </div>
-                        <div class="card-actions">
-                            <button class="btn btn-secondary"><i class="fas fa-tint"></i> Water</button>
-                            <button class="btn btn-primary"><i class="fas fa-chart-line"></i> Details</button>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -213,8 +197,9 @@
         </main>
     </div>
 
-    <div id ="userinfo" class="userinfo-modal">
-        <span onclick="document.getElementById('userinfo').style.display='none'" class="close" title="Close Modal">×</span>
+    <div id="userinfo" class="userinfo-modal">
+        <span onclick="document.getElementById('userinfo').style.display='none'" class="close"
+            title="Close Modal">×</span>
         <div class="user-info-content">
             <h2>User Profile</h2>
             <p>Name: John Doe</p>
@@ -222,7 +207,22 @@
         </div>
     </div>
 
-<script src="./frontend.js"></script>
+    <div id="logout_modal" class="modal">
+        <form class="modal-content" action="/action_page.php">
+            <div class="container">
+                <h1>Log out</h1>
+                <p>Are you sure you want to log out?</p>
+
+                <div class="clearfix">
+                    <button type="button" id="no_btn" class="no_btn">No</button>
+                    <button type="button" id="logout_btn" class="logout_btn">Log out</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="./dashboard.js"></script>
+    <script src="./frontend.js"></script>
 </body>
 
 </html>
