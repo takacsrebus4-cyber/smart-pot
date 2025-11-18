@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantMonitor Pro | Smart Plant Monitoring</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="dashboard" class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                <span>PlantMonitor Pro</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="./myplants.html" class="active"><i class="fas fa-leaf"></i> My Plants</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+                <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1>My Plants</h1>
+            </header>
+
+            <!-- Plants Grid -->
+            <section>
+                <div class="plants-grid">
+                    <!-- Plant Card 1 -->
+                    <div class="plant-card">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Monstera Deliciosa</h3>
+                            <span class="plant-status status-healthy">Healthy</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value">72°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">65%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plant Card 2 -->
+                    <div class="plant-card caution">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Snake Plant</h3>
+                            <span class="plant-status status-caution">Needs Water</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value">68°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">60%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill caution" style="width: 25%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plant Card 3 -->
+                    <div class="plant-card warning">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Fiddle Leaf Fig</h3>
+                            <span class="plant-status status-warning">High Temp</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value" style="color: var(--warning);">89°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">75%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plant Card 4 -->
+                    <div class="plant-card">
+                        <div class="plant-header">
+                            <h3 class="plant-name">Peace Lily</h3>
+                            <span class="plant-status status-healthy">Healthy</span>
+                        </div>
+                        <div class="plant-metrics">
+                            <div class="metric">
+                                <div class="metric-value">70°F</div>
+                                <div class="metric-label">Temperature</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">80%</div>
+                                <div class="metric-label">Humidity</div>
+                            </div>
+                        </div>
+                        <div class="mb-1">
+                            <div class="metric-label">Soil Moisture</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="metric-label">Light Exposure</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="logout_modal" class="modal">
+        <form class="modal-content" action="/action_page.php">
+            <div class="container">
+                <h1>Log out</h1>
+                <p>Are you sure you want to log out?</p>
+                <div class="clearfix">
+                    <button type="button" id="no_btn" class="no_btn">No</button>
+                    <button type="button" id="logout_btn" class="logout_btn">Log out</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="userinfo" class="userinfo-modal">
+        <span onclick="document.getElementById('userinfo').style.display='none'" class="close"
+            title="Close Modal">×</span>
+        <div class="user-info-content">
+            <h2>User Profile</h2>
+            <p>Name: John Doe</p>
+            <p>Email:abc@gmail.com</p>
+        </div>
+    </div>
+
+    <script src="./dashboard.js"></script>
+    <script src="./frontend.js"></script>
+</body>
+
+</html>

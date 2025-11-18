@@ -3,11 +3,11 @@
             --primary-green: #2d5a27;
             --secondary-green: #4a7c59;
             --accent-green: #8bb174;
-            --light-green: #e8f5e8;
+            --light-green: #daf2da;
             --dark-text: #2c3e50;
             --light-text: #7f8c8d;
             --white: #ffffff;
-            --gray-bg: #f8f9fa;
+            --gray-bg: #e4f1e5;
             --warning: #e74c3c;
             --caution: #f39c12;
             --success: #27ae60;
@@ -389,22 +389,30 @@
         .hidden { display: none; }
 
 
-/* Float cancel and delete buttons and add an equal width */
-.yesbtn, .nobtn {
-  float: left;
-  width: 50%;
-  height: 30px;
+/* Float no and logout buttons and add an equal width */
+.logout_btn, .no_btn {
+  width: 45%;
+  height: 40px;
+  border-radius: 25px;
+  border-color: var(--primary-green);
+  font-size: 15px;
 }
 
-/* Add a color to the "yes" button */
-.yesbtn {
-  background-color: #27ae60;
-  color: black;
+.logout_btn:hover, .no_btn:hover {
+    background-color: var(--primary-green);
+    color: var(--light-green);
 }
 
 /* Add a color to the "no" button */
-.nobtn {
-  background-color: #e74c3c;
+.no_btn {
+  background-color: var(--light-green);
+  color: var(--secondary-green);
+}
+
+/* Add a color to the "logout" button */
+.logout_btn {
+  background-color: var(--secondary-green);
+  color: var(--light-green);
 }
 
 /* Add padding and center-align text to the container */
@@ -424,17 +432,17 @@
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: rgba(0, 0, 0, 0.6);
-  padding-top: 50px;
 }
 
 /* Modal Content/Box */
 .modal-content {
   background-color: #fefefe;
-  margin: 15% auto 20% auto; /* 5% from the top, 15% from the bottom and centered */
+  margin: 15% auto 20% auto;
   align-self: center;
   border: 1px solid #888;
-  width: 40%; /* Could be more or less, depending on screen size */
-  height: 20%;
+  width: 45%;
+  height: 27%;
+  border-radius: 25px;
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.6s;
   animation-name: animatetop;
@@ -443,14 +451,14 @@
 
 .container h1 {
   color: var(--primary-green);
-  font-size: 22px;
-  margin-bottom: 5px;
+  font-size: 26px;
+  margin-bottom: 10px;
   }
         
 .container p {
   color: var(--secondary-green);
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 20px;
+  margin-bottom: 20px;
 }
 
 /* Add Animation */
@@ -462,4 +470,61 @@
 @keyframes animatetop {
   from {top:-300px; opacity:0}
   to {top:0; opacity:1}
+}
+
+/* Popup container - can be anything you want */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
 }

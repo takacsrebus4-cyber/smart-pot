@@ -8,7 +8,6 @@ const app = express();
 const port = 3000;
 let refreshTokens = [];
 const userinfo = [];
-let username = null;
 const cors = require('cors');
 const { table, Console } = require("console");
 app.use(cors());
@@ -115,12 +114,12 @@ app.post("/login", async (req, res) => {
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
     var table = "users";
-    username = req.body.username;
+    var username = req.body.username;
     var password = req.body.password;
     connection.query(`SELECT * FROM ${table} WHERE name="${username}"`, async (err, result) => {
       connection.release();
       if (result.length == 0) {
-        res.sendStatus(404);
+        res.json({userNotFound: true});
         //console.log("---------> User not found");
       }
       else {
@@ -154,6 +153,7 @@ app.post("/login", async (req, res) => {
           }
         }
         else {
+          res.json({ accessToken: undefined });
           //console.log("---------> Password Incorrect")
         }
       }
@@ -203,9 +203,10 @@ app.post("/logout", (req, res) => {
   refreshTokens = refreshTokens.filter((c) => c != req.body.refreshToken)
   //remove the old refreshToken from the refreshTokens list
 
-  for (j = 0; j < 1; j++) {
+  for (j = 0; j < userinfo.length; j++) {
     if (userinfo[j].username == req.body.username) {
       userinfo.splice(j, 1);
+      console.log(userinfo)
       logout = true;
       break;
     }
@@ -224,9 +225,5 @@ app.post("/getUserinfo", (req, res) => {
       break;
     }
   }
-});
-
-app.get("/getUsername", (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.json({ username: username });
+  res.json({found: false });
 });

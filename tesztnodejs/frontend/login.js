@@ -12,12 +12,18 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
         },
         body: JSON.stringify(data),
     }).then(res => res.json()).then(response => {
-        if (response.accessToken === undefined) {
-            alert("Helytelen bejelentkezési adatok!")
+        if (response.userNotFound === true) {
+            document.getElementById("usernameError").style.display = 'block';
         }
         else {
-            //console.log(response.accessToken)
-            window.location.href = "./test.html";
+            if (response.accessToken === undefined) {
+                document.getElementById("passwordError").style.display = 'block';
+            }
+            else {
+                //console.log(response.accessToken)
+                localStorage.setItem("username", username);
+                window.location.href = "./dashboard.html";
+            }
         }
     });
 });
