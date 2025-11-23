@@ -267,7 +267,7 @@
         }
 
         .chart-container {
-            height: 300px;
+            height: 450px;
             background: var(--gray-bg);
             border-radius: var(--radius);
             display: flex;

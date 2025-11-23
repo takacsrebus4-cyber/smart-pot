@@ -1,4 +1,4 @@
-require("dotenv").config()
+require("dotenv").config({path: "C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/backend/.env"});
 const express = require("express")
 const app = express()
 app.use (express.json())
@@ -8,8 +8,8 @@ const cors = require('cors');
 app.use(cors());
 //We will run this server on a different port i.e. port 5000
 
-app.listen(/*port*/5000, ()=> {
-  console.log(`Validation server running on 5000`); //${port}...`);
+app.listen(port, ()=> {
+  console.log(`Validation server running on ${port}...`);
 });
 
 app.post("/validateToken", validateToken, (req, res)=>{
@@ -26,9 +26,9 @@ function validateToken(req, res, next) {
     res.sendStatus(400).json({tokenValid : false}); //if there is no token
   }
 
-  jwt.verify(token, /*process.env.ACCESS_TOKEN_SECRET*/"fasz", (err, user) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
-      jwt.verify(refreshToken, /*process.env.REFRESH_TOKEN_SECRET*/"fasz2", (err, user) => {
+      jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) {
           res.status(403).json({tokenValid : false, refreshTokenValid : false});
         }

@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const mysql = require('mysql2');
 const generateAccessToken = require("./genAccessToken.js");
 const generateRefreshToken = require("./genRefreshToken.js");
-require("dotenv").config();
+require("dotenv").config({path: "C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/backend/.env"});
 const app = express();
 const port = 3000;
 let refreshTokens = [];
@@ -16,8 +16,6 @@ app.use(express.urlencoded({
   extended: true,
 })
 );
-
-//console.log("port:", process.env.PORT);
 
 const db = mysql.createPool({
   //connectionLimit: 10,
@@ -119,7 +117,7 @@ app.post("/login", async (req, res) => {
     connection.query(`SELECT * FROM ${table} WHERE name="${username}"`, async (err, result) => {
       connection.release();
       if (result.length == 0) {
-        res.json({userNotFound: true});
+        res.json({ userNotFound: true });
         //console.log("---------> User not found");
       }
       else {
@@ -225,5 +223,5 @@ app.post("/getUserinfo", (req, res) => {
       break;
     }
   }
-  res.json({found: false });
+  res.json({ found: false });
 });
