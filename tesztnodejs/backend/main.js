@@ -3,13 +3,14 @@ const bcrypt = require("bcrypt");
 const mysql = require('mysql2');
 const generateAccessToken = require("./genAccessToken.js");
 const generateRefreshToken = require("./genRefreshToken.js");
-require("dotenv").config({path: 'C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/backend/.env'});
+require("dotenv").config({ path: 'C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/backend/.env' });
 const app = express();
 const port = process.env.PORT;
 let refreshTokens = [];
 const userinfo = [];
 const cors = require('cors');
 const { table, Console } = require("console");
+const e = require("express");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({
@@ -82,28 +83,27 @@ app.get("/query/users", async (req, res) => {
 
 app.post("/upload/user", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  try {
-    const connection = await mysql.createConnection({
-      host: process.env.HOST,
-      user: process.env.USER,
-      password: process.env.PASSWORD,
-      database: process.env.DATABASE,
-    });
-
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err);
     console.log(req.body);
     var table = "users"
-    var name = req.body.name;
-    var password = bcrypt.hashSync(req.body.password, 10);
-    connection.execute(`INSERT INTO ${table} (name,password) VALUES ("${name}","${password}")`);
-    await connection.end();
-    res.json("Sikeres feltöltés");
-
-  } catch (error) {
-    console.error('Database connection failed:', error);
-  }
+    var username = req.body.username;
+    if (!username || !req.body.password) {
+      res.json({ valid: false });
+    }
+    else {
+      var password = bcrypt.hashSync(req.body.password, 10);
+      connection.query(`INSERT INTO ${table} (name,password) VALUES ("${username}","${password}"
+    )`, async (err, result) => {
+        connection.release();
+        console.log(result);
+        res.json({valid: true});
+      });
+    }
+  });
 });
 
-app.post("/upload_data", async (req, res) => {
+app.post("/upload/data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   console.log("Data upload request received");
   db.getConnection(async (err, connection) => {
@@ -241,15 +241,15 @@ app.post("/refreshToken", (req, res) => {
   const username = req.body.username;
   console.log(refreshToken);
   if (!refreshTokens.includes(refreshToken)) {
-    res.json({ accessToken: null, refreshToken: null })
+    res.json({ accessToken: null, refreshToken: null });
   }
   else {
 
-    refreshTokens = refreshTokens.filter((c) => c != refreshToken)
+    refreshTokens = refreshTokens.filter((c) => c != refreshToken);
     //remove the old refreshToken from the refreshTokens list
 
-    const accessToken = generateAccessToken({ user: username })
-    refreshToken = generateRefreshToken({ user: username })
+    const accessToken = generateAccessToken({ user: username });
+    refreshToken = generateRefreshToken({ user: username });
     //generate new accessToken and refreshTokens
 
     refreshTokens.push(refreshToken);
@@ -261,7 +261,7 @@ app.post("/refreshToken", (req, res) => {
       }
     }
 
-    res.json({ accessToken: accessToken, refreshToken: refreshToken })
+    res.json({ accessToken: accessToken, refreshToken: refreshToken });
   }
 
 });
@@ -299,8 +299,8 @@ app.post("/getUserinfo", (req, res) => {
     }
   }
 
-  if (found == false){
+  if (found == false) {
     res.json({ found: false });
   }
-  
+
 });

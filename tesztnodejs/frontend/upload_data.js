@@ -13,7 +13,7 @@ document.getElementById("button").addEventListener("click", async () => {
         temperature: temperature,
         current_plant_id: current_plant_id
     };
-    const response = await fetch('http://localhost:3000/upload_data', {
+    const response = await fetch('http://localhost:3000/upload/data', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -21,5 +21,4 @@ document.getElementById("button").addEventListener("click", async () => {
         body: JSON.stringify(data),
     });
     console.log(response)
-    alert(response)
 });
