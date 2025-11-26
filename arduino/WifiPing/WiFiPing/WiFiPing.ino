@@ -16,7 +16,7 @@
  */
 
 #include "WiFiS3.h"
-#include "arduino_secrets.h"
+#include "../arduino_secrets.h"
 
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = "TakacsRezidencia";    // your network SSID (name)

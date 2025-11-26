@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Pot - CG8WXK</title>
-
-
 </head>
 <body>
     <h1>Welcome to Plant Upload</h1>
@@ -38,7 +36,7 @@
         <label for="min_humidity">Min Humidity:</label><br>
         <input type="text" id="min_humidity" placeholder="Min Humidity"></div>
 
-        <div><input type="button" value="Submit"></div>
+        <div><input id="button" type="button" value="Submit"></div>
     </div>
     </form>
     
@@ -73,8 +71,8 @@
                 },
                 body: JSON.stringify(data),
             });
-            console.log(response)
-            alert(response)
+            console.log(response);
+            alert(response);
         });
 
     </script>

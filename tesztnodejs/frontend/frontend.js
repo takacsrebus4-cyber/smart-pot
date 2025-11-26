@@ -1,6 +1,8 @@
 let refreshToken = "";
 let username = localStorage.getItem("username") || null;
 console.log(`Username from localStorage: ${username}`);
+const host = 'http://127.0.0.1:3000'
+const authHost = 'http://127.0.0.1:5000'
 
 
 document.body.onload = function () {
@@ -9,7 +11,7 @@ document.body.onload = function () {
 
 //token validation on dashboard click
 document.getElementById("dashboard").addEventListener("click", function (evt) {
-    fetch('http://127.0.0.1:3000/getUserinfo', {
+    fetch(host + '/getUserinfo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -24,7 +26,7 @@ document.getElementById("dashboard").addEventListener("click", function (evt) {
             accessToken: response.accessToken,
             refreshToken: refreshToken
         };
-        fetch('http://127.0.0.1:5000/validateToken', {
+        fetch(authHost + '/validateToken', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,7 +43,7 @@ document.getElementById("dashboard").addEventListener("click", function (evt) {
                         refreshToken: refreshToken
                     };
                     //generate a new access token using the refresh token
-                    fetch('http://localhost:3000/refreshToken', {
+                    fetch(host + '/refreshToken', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -77,7 +79,7 @@ document.getElementById("logout_btn").addEventListener("click", function (evt) {
         username: username,
         refreshToken: refreshToken
     };
-    fetch('http://localhost:3000/logout', {
+    fetch(host + '/logout', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

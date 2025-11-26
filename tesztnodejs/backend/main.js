@@ -3,9 +3,9 @@ const bcrypt = require("bcrypt");
 const mysql = require('mysql2');
 const generateAccessToken = require("./genAccessToken.js");
 const generateRefreshToken = require("./genRefreshToken.js");
-require("dotenv").config({path: "C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/backend/.env"});
+require("dotenv").config({path: 'C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/backend/.env'});
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 let refreshTokens = [];
 const userinfo = [];
 const cors = require('cors');
@@ -19,11 +19,11 @@ app.use(express.urlencoded({
 
 const db = mysql.createPool({
   //connectionLimit: 10,
-  host: "127.0.0.1",
-  user: "rebi",
-  password: "rebi2001",
-  database: "test",
-  port: "3306"
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
+  port: process.env.DB_PORT
 })
 
 app.get("/query/plants", async (req, res) => {
@@ -42,7 +42,6 @@ app.post("/upload/plant", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   console.log("Upload request received");
   db.getConnection(async (err, connection) => {
-    console.log("valami");
     if (err) throw (err);
     console.log(req.body);
     var table = "plants_data"
@@ -63,8 +62,7 @@ app.post("/upload/plant", async (req, res) => {
           ${min_temperature}, ${max_temperature}, ${max_humidity}, ${min_humidity}
         )`, async (err, result) => {
       connection.release();
-      console.log(result)
-      res.send("Sikeres feltöltés");
+      console.log(result);
       res.json("Sikeres feltöltés");
     });
   });
@@ -86,10 +84,10 @@ app.post("/upload/user", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   try {
     const connection = await mysql.createConnection({
-      host: 'localhost',
-      user: 'rebi',
-      password: 'rebi2001',
-      database: 'test'
+      host: process.env.HOST,
+      user: process.env.USER,
+      password: process.env.PASSWORD,
+      database: process.env.DATABASE,
     });
 
     console.log(req.body);
@@ -103,6 +101,81 @@ app.post("/upload/user", async (req, res) => {
   } catch (error) {
     console.error('Database connection failed:', error);
   }
+});
+
+app.post("/upload_data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  console.log("Data upload request received");
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err);
+    console.log("Request body: ");
+    console.log(req.body);
+    var table1 = "current_data";
+    var table2 = "weekly_data";
+    var timestamp = req.body.timestamp;
+    var light = req.body.light;
+    var moisture = req.body.moisture;
+    var temperature = req.body.temperature;
+    var humidity = req.body.humidity;
+    var current_plant_id = req.body.current_plant_id;
+    connection.query(`TRUNCATE TABLE ${table1};`, async (err, result) => {
+      connection.release();
+      console.log("Result: ");
+      console.log(result);
+      console.log("Table truncated");
+    });
+    connection.query(`INSERT INTO ${table1}
+        (timestamp, light, moisture, temperature, humidity, current_plant_id)
+        VALUES(
+          "${timestamp}", ${light}, ${moisture}, ${temperature}, ${humidity}, ${current_plant_id}
+        );`, async (err, result) => {
+      connection.release();
+      console.log("Result: ");
+      console.log(result);
+    });
+
+    connection.query(`DELETE FROM ${table2} WHERE timestamp < NOW() - INTERVAL 7 DAY;`, async (err, result) => {
+      connection.release();
+      console.log("Result: ");
+      console.log(result);
+      console.log("Old data deleted from weekly_data");
+    });
+
+    connection.query(`INSERT INTO ${table2}
+        (timestamp, light, moisture, temperature, humidity, current_plant_id)
+        VALUES(
+          "${timestamp}", ${light}, ${moisture}, ${temperature}, ${humidity}, ${current_plant_id}
+        )`, async (err, result) => {
+      connection.release();
+      console.log("Result: ");
+      console.log(result);
+      res.json("Sikeres feltöltés");
+    });
+  });
+});
+
+app.get("/query/current_data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "current_data"
+    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+      res.json(result);
+      connection.release();
+    });
+  });
+});
+
+app.get("/query/weekly_data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "weekly_data"
+    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+      res.json(result);
+      connection.release();
+    });
+  });
 });
 
 app.post("/login", async (req, res) => {
@@ -123,13 +196,10 @@ app.post("/login", async (req, res) => {
       else {
         const hashedPassword = result[0].password;
         if (await bcrypt.compare(password, hashedPassword)) {
-          //console.log("---------> Login Successful");
+
           const token = generateAccessToken({ user: username });
-          //console.log("Generated Access Token: ", token);
           const refreshToken = generateRefreshToken({ user: username });
           refreshTokens.push(refreshToken);
-          //console.log("Generated Refresh Token: ", refreshToken);
-          res.json({ accessToken: token });
 
 
           //If user already exists in userinfo array, update tokens
@@ -149,6 +219,8 @@ app.post("/login", async (req, res) => {
             //console.log("User not found in userinfo array, adding new entry.");
             //console.log("Userinfo array updated:", userinfo);
           }
+
+          res.json({ accessToken: token });
         }
         else {
           res.json({ accessToken: undefined });
@@ -217,11 +289,18 @@ app.post("/logout", (req, res) => {
 app.post("/getUserinfo", (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
 
+  var found = false;
+
   for (j = 0; j < userinfo.length; j++) {
     if (userinfo[j].username == req.body.username) {
+      found = true;
       res.json(userinfo[j]);
       break;
     }
   }
-  res.json({ found: false });
+
+  if (found == false){
+    res.json({ found: false });
+  }
+  
 });

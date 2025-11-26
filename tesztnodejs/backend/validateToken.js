@@ -3,13 +3,13 @@ const express = require("express")
 const app = express()
 app.use (express.json())
 const jwt = require("jsonwebtoken")
-const port = process.env.PORT
+const auth_port = process.env.AUTH_PORT
 const cors = require('cors');
 app.use(cors());
 //We will run this server on a different port i.e. port 5000
 
-app.listen(port, ()=> {
-  console.log(`Validation server running on ${port}...`);
+app.listen(auth_port, ()=> {
+  console.log(`Validation server running on ${auth_port}...`);
 });
 
 app.post("/validateToken", validateToken, (req, res)=>{

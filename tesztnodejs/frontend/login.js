@@ -1,3 +1,5 @@
+const host = 'http://127.0.0.1:3000'
+
 document.getElementById("loginForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const data = {
@@ -5,7 +7,7 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
         password: document.getElementById("password").value
     };
     username = document.getElementById("username").value
-    fetch('http://127.0.0.1:3000/login', {
+    fetch(host + '/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
