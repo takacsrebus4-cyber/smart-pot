@@ -110,38 +110,22 @@ app.post("/upload/data", async (req, res) => {
     if (err) throw (err);
     console.log("Request body: ");
     console.log(req.body);
-    var table1 = "current_data";
-    var table2 = "weekly_data";
+    var table = "weekly_data";
     var timestamp = req.body.timestamp;
     var light = req.body.light;
     var moisture = req.body.moisture;
     var temperature = req.body.temperature;
     var humidity = req.body.humidity;
     var current_plant_id = req.body.current_plant_id;
-    connection.query(`TRUNCATE TABLE ${table1};`, async (err, result) => {
-      connection.release();
-      console.log("Result: ");
-      console.log(result);
-      console.log("Table truncated");
-    });
-    connection.query(`INSERT INTO ${table1}
-        (timestamp, light, moisture, temperature, humidity, current_plant_id)
-        VALUES(
-          "${timestamp}", ${light}, ${moisture}, ${temperature}, ${humidity}, ${current_plant_id}
-        );`, async (err, result) => {
-      connection.release();
-      console.log("Result: ");
-      console.log(result);
-    });
 
-    connection.query(`DELETE FROM ${table2} WHERE timestamp < NOW() - INTERVAL 7 DAY;`, async (err, result) => {
+    connection.query(`DELETE FROM ${table} WHERE timestamp < NOW() - INTERVAL 7 DAY;`, async (err, result) => {
       connection.release();
       console.log("Result: ");
       console.log(result);
       console.log("Old data deleted from weekly_data");
     });
 
-    connection.query(`INSERT INTO ${table2}
+    connection.query(`INSERT INTO ${table}
         (timestamp, light, moisture, temperature, humidity, current_plant_id)
         VALUES(
           "${timestamp}", ${light}, ${moisture}, ${temperature}, ${humidity}, ${current_plant_id}
@@ -154,12 +138,12 @@ app.post("/upload/data", async (req, res) => {
   });
 });
 
-app.get("/query/current_data", async (req, res) => {
+app.get("/query/latest_data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
-    var table = "current_data"
-    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+    var table = "weekly_data"
+    connection.query(`SELECT * FROM ${table} ORDER BY timestamp DESC LIMIT 1;`, async (err, result) => {
       res.json(result);
       connection.release();
     });
