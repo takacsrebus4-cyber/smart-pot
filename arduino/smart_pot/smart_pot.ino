@@ -28,6 +28,12 @@ int status = WL_IDLE_STATUS;
 //IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
 char server[] = "smartpot.taki02.org";  // name address for Google (using DNS)
 
+/*
+char light_st[] = "";
+char moisture_st[] = "";
+char temperature_st[] = "";
+char humidity_st[] = "";*/
+
 // Initialize the Ethernet client library
 // with the IP address and port of the server
 // that you want to connect to (port 80 is default for HTTP):
@@ -52,6 +58,7 @@ DHT_Unified dht(DHTPIN, DHTTYPE);
 uint32_t delayMS;
 
 void setup() {
+
   /* -------------------------------------------------------------------------- */
   //Initialize serial and wait for port to open:
   Serial.begin(115200);
@@ -80,13 +87,6 @@ void setup() {
     delay(10000);
   }
   printWifiStatus();
-  Serial.println("\nStarting connection to server...");
-  // if you get a connection, report back via serial:
-  if (client.connect(server, 443)) {
-    Serial.println("connected to server");
-  } else {
-    Serial.println("connection failed");
-  }
 
 
   Wire.begin();
@@ -130,15 +130,21 @@ void loop() {
 
 
   //measureing soil moisture
-  //air: 725-750, water: 475-495, fully dry soil: 680-750, fully wet soil: 420-450
+  //wet: 370-450 / moist: 440-520 / medium: 510-600 / lightly wet: 590-670 / dry: 660-750
   int moisture;
   moisture = analogRead(0);  //connect sensor to Analog 0
   Serial.print("Moisture: ");
   Serial.println(moisture);
 
-  //sending data to the server
+
+//sending data to server
+  Serial.println("\nStarting connection to server...");
+  // if you get a connection, report back via serial:
   if (client.connect(server, 443)) {
+    Serial.println("connected to server");
     upload_data(light, moisture, temperature, humidity);
+  } else {
+    Serial.println("connection failed");
   }
 }
 
@@ -160,10 +166,36 @@ void printWifiStatus() {
   Serial.println(" dBm");
 }
 
+void read_response() {
+  /* -------------------------------------------------------------------------- */
+  uint32_t received_data_num = 0;
+  while (client.available()) {
+    /* actual data reception */
+    char c = client.read();
+    /* print data to serial port */
+    Serial.print(c);
+    /* wrap data to 80 columns*/
+    received_data_num++;
+    if (received_data_num % 80 == 0) {
+      Serial.println();
+    }
+  }
+}
+
 
 void upload_data(float light, int moisture, float temperature, float humidity) {
-  Serial.println("connected to server");
-  String jsonData = "{\"light\":" + String(light) + ",\"moisture\":" + String(moisture) + ",\"temperature\":" + String(temperature) + ",\"humidity\":" + String(humidity) + "}";
+
+  String light_st = String(light);
+  String moisture_st = String(moisture);
+  String temperature_st = String(temperature);
+  String humidity_st = String(humidity);
+
+  String jsonData = "{\"light\":" + String(light_st) + ",\"moisture\":" + String(moisture_st) + ",\"temperature\":" + String(temperature_st) + ",\"humidity\":" + String(humidity_st) + ",\"current_plant_id\":3}";
+  
+  //String jsonData = "{\"light\":" + String(23.6) + ",\"moisture\":" + String(550) + ",\"temperature\":" + String(32.00) + ",\"humidity\":" + String(65.10) + ",\"current_plant_id\":3}";
+
+  Serial.println(jsonData);
+  
   // Make a HTTP request:
   client.println("POST /upload/data HTTP/1.1");
   client.println("Host: " + String(server));
@@ -179,21 +211,4 @@ void upload_data(float light, int moisture, float temperature, float humidity) {
   Serial.println("Request sent");
   Serial.println("Waiting for response...");
   read_response();
-}
-
-
-void read_response() {
-  /* -------------------------------------------------------------------------- */
-  uint32_t received_data_num = 0;
-  while (client.available()) {
-    /* actual data reception */
-    char c = client.read();
-    /* print data to serial port */
-    Serial.print(c);
-    /* wrap data to 80 columns*/
-    received_data_num++;
-    if (received_data_num % 80 == 0) {
-      Serial.println();
-    }
-  }
 }

@@ -68,9 +68,9 @@ void setup() {
 
   if (client.connect(server, 443)) {
     Serial.println("connected to server");
-     String jsonData = "{\"name\":\"tullipan123.0\",\"scientific_name\":\"tlius panus\",\"min_light\":10,\"max_light\":20,\"min_moisture\":5,\"max_moisture\":10,\"min_temperature\":10,\"max_temperature\":20,\"min_humidity\":2,\"max_humidity\":30}";
+     String jsonData = "{\"light\":16.67,\"moisture\":459,\"temperature\":22.00,\"humidity\":64.50,\"current_plant_id\":3}";
     // Make a HTTP request:
-        client.println("POST /upload/plant HTTP/1.1");
+    client.println("POST /upload/data HTTP/1.1");
     client.println("Host: " + String(server));
     client.println("Content-Type: application/json");
     client.println("Connection: close");

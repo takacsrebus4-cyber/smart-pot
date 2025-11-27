@@ -27,11 +27,185 @@ const db = mysql.createPool({
   port: process.env.DB_PORT
 })
 
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
+});
+
+app.post("/login", async (req, res) => {
+  let existingUser = false;
+  res.set('Access-Control-Allow-Origin', '*');
+  //console.log("Login request received");
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "users";
+    var username = req.body.username;
+    var password = req.body.password;
+    connection.query(`SELECT * FROM ${table} WHERE name="${username}"`, async (err, result) => {
+      connection.release();
+      if (result.length == 0) {
+        res.json({ userNotFound: true });
+        //console.log("---------> User not found");
+      }
+      else {
+        const hashedPassword = result[0].password;
+        if (await bcrypt.compare(password, hashedPassword)) {
+
+          const token = generateAccessToken({ user: username });
+          const refreshToken = generateRefreshToken({ user: username });
+          refreshTokens.push(refreshToken);
+
+
+          //If user already exists in userinfo array, update tokens
+          for (j = 0; j < userinfo.length; j++) {
+            if (username == userinfo[j].username) {
+              console.log("User found in userinfo array, updating tokens.");
+              userinfo[j] = {accessToken: token, refreshToken: refreshToken };
+              console.log("Userinfo array updated:", userinfo);
+              existingUser = true;
+              break;
+            }
+          }
+
+          //If user does not exist in userinfo array, add new entry
+          if (existingUser == false) {
+            userinfo.push({ id: result[0].id, username: username, accessToken: token, refreshToken: refreshToken });
+            //console.log("User not found in userinfo array, adding new entry.");
+            console.log("Userinfo array updated:", userinfo);
+          }
+
+          res.json({ accessToken: token });
+        }
+        else {
+          res.json({ accessToken: undefined });
+          //console.log("---------> Password Incorrect")
+        }
+      }
+    });
+  });
+});
+
+app.post("/logout", (req, res) => {
+
+  let logout = false;
+
+  refreshTokens = refreshTokens.filter((c) => c != req.body.refreshToken)
+  //remove the old refreshToken from the refreshTokens list
+
+  for (j = 0; j < userinfo.length; j++) {
+    if (userinfo[j].username == req.body.username) {
+      userinfo.splice(j, 1);
+      console.log(userinfo)
+      logout = true;
+      break;
+    }
+  }
+
+  res.json(logout);
+
+});
+
+app.post("/refreshToken", (req, res) => {
+  let refreshToken = req.body.refreshToken;
+  const username = req.body.username;
+  console.log(refreshToken);
+  if (!refreshTokens.includes(refreshToken)) {
+    res.json({ accessToken: null, refreshToken: null });
+  }
+  else {
+
+    refreshTokens = refreshTokens.filter((c) => c != refreshToken);
+    //remove the old refreshToken from the refreshTokens list
+
+    const accessToken = generateAccessToken({ user: username });
+    refreshToken = generateRefreshToken({ user: username });
+    //generate new accessToken and refreshTokens
+
+    refreshTokens.push(refreshToken);
+
+    for (j = 0; j < 1; j++) {
+      if (userinfo[j].username == username) {
+        userinfo[j] = { username: username, accessToken: accessToken, refreshToken: refreshToken };
+        break;
+      }
+    }
+
+    res.json({ accessToken: accessToken, refreshToken: refreshToken });
+  }
+
+});
+
+app.post("/getUserinfo", (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+
+  var found = false;
+
+  for (j = 0; j < userinfo.length; j++) {
+    if (userinfo[j].username == req.body.username) {
+      found = true;
+      res.json(userinfo[j]);
+      break;
+    }
+  }
+
+  if (found == false) {
+    res.json({ found: false });
+  }
+
+});
+
 app.get("/query/plants", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
     var table = "plants_data"
+    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+      res.json(result);
+      connection.release();
+    });
+  });
+});
+
+app.get("/query/users", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err);
+    var table = "users"
+    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+      res.json(result);
+      connection.release();
+    });
+  });
+});
+
+app.get("/query/current_plants", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "current_plants"
+    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+      res.json(result);
+      connection.release();
+    });
+  });
+});
+
+app.get("/query/latest_data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "weekly_data"
+    connection.query(`SELECT * FROM ${table} ORDER BY timestamp DESC LIMIT 1;`, async (err, result) => {
+      res.json(result);
+      connection.release();
+    });
+  });
+});
+
+app.get("/query/weekly_data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "weekly_data"
     connection.query(`SELECT * FROM ${table}`, async (err, result) => {
       res.json(result);
       connection.release();
@@ -69,18 +243,6 @@ app.post("/upload/plant", async (req, res) => {
   });
 });
 
-app.get("/query/users", async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err);
-    var table = "users"
-    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
-      res.json(result);
-      connection.release();
-    });
-  });
-});
-
 app.post("/upload/user", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
@@ -111,12 +273,13 @@ app.post("/upload/data", async (req, res) => {
     console.log("Request body: ");
     console.log(req.body);
     var table = "weekly_data";
-    var timestamp = req.body.timestamp;
+    var date = new Date();
+    var timestamp = date.toISOString().split('T')[0] + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     var light = req.body.light;
     var moisture = req.body.moisture;
     var temperature = req.body.temperature;
     var humidity = req.body.humidity;
-    var current_plant_id = req.body.current_plant_id;
+    var current_plant_id = 3;
 
     connection.query(`DELETE FROM ${table} WHERE timestamp < NOW() - INTERVAL 7 DAY;`, async (err, result) => {
       connection.release();
@@ -136,155 +299,4 @@ app.post("/upload/data", async (req, res) => {
       res.json("Sikeres feltöltés");
     });
   });
-});
-
-app.get("/query/latest_data", async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "weekly_data"
-    connection.query(`SELECT * FROM ${table} ORDER BY timestamp DESC LIMIT 1;`, async (err, result) => {
-      res.json(result);
-      connection.release();
-    });
-  });
-});
-
-app.get("/query/weekly_data", async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "weekly_data"
-    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
-      res.json(result);
-      connection.release();
-    });
-  });
-});
-
-app.post("/login", async (req, res) => {
-  let existingUser = false;
-  res.set('Access-Control-Allow-Origin', '*');
-  //console.log("Login request received");
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "users";
-    var username = req.body.username;
-    var password = req.body.password;
-    connection.query(`SELECT * FROM ${table} WHERE name="${username}"`, async (err, result) => {
-      connection.release();
-      if (result.length == 0) {
-        res.json({ userNotFound: true });
-        //console.log("---------> User not found");
-      }
-      else {
-        const hashedPassword = result[0].password;
-        if (await bcrypt.compare(password, hashedPassword)) {
-
-          const token = generateAccessToken({ user: username });
-          const refreshToken = generateRefreshToken({ user: username });
-          refreshTokens.push(refreshToken);
-
-
-          //If user already exists in userinfo array, update tokens
-          for (j = 0; j < userinfo.length; j++) {
-            if (username == userinfo[j].username) {
-              console.log("User found in userinfo array, updating tokens.");
-              userinfo[j] = { username: username, accessToken: token, refreshToken: refreshToken };
-              console.log("Userinfo array updated:", userinfo);
-              existingUser = true;
-              break;
-            }
-          }
-
-          //If user does not exist in userinfo array, add new entry
-          if (existingUser == false) {
-            userinfo.push({ username: username, accessToken: token, refreshToken: refreshToken });
-            //console.log("User not found in userinfo array, adding new entry.");
-            //console.log("Userinfo array updated:", userinfo);
-          }
-
-          res.json({ accessToken: token });
-        }
-        else {
-          res.json({ accessToken: undefined });
-          //console.log("---------> Password Incorrect")
-        }
-      }
-    });
-  });
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
-
-//REFRESH TOKEN API
-app.post("/refreshToken", (req, res) => {
-  let refreshToken = req.body.refreshToken;
-  const username = req.body.username;
-  console.log(refreshToken);
-  if (!refreshTokens.includes(refreshToken)) {
-    res.json({ accessToken: null, refreshToken: null });
-  }
-  else {
-
-    refreshTokens = refreshTokens.filter((c) => c != refreshToken);
-    //remove the old refreshToken from the refreshTokens list
-
-    const accessToken = generateAccessToken({ user: username });
-    refreshToken = generateRefreshToken({ user: username });
-    //generate new accessToken and refreshTokens
-
-    refreshTokens.push(refreshToken);
-
-    for (j = 0; j < 1; j++) {
-      if (userinfo[j].username == username) {
-        userinfo[j] = { username: username, accessToken: accessToken, refreshToken: refreshToken };
-        break;
-      }
-    }
-
-    res.json({ accessToken: accessToken, refreshToken: refreshToken });
-  }
-
-});
-
-app.post("/logout", (req, res) => {
-
-  let logout = false;
-
-  refreshTokens = refreshTokens.filter((c) => c != req.body.refreshToken)
-  //remove the old refreshToken from the refreshTokens list
-
-  for (j = 0; j < userinfo.length; j++) {
-    if (userinfo[j].username == req.body.username) {
-      userinfo.splice(j, 1);
-      console.log(userinfo)
-      logout = true;
-      break;
-    }
-  }
-
-  res.json(logout);
-
-});
-
-app.post("/getUserinfo", (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-
-  var found = false;
-
-  for (j = 0; j < userinfo.length; j++) {
-    if (userinfo[j].username == req.body.username) {
-      found = true;
-      res.json(userinfo[j]);
-      break;
-    }
-  }
-
-  if (found == false) {
-    res.json({ found: false });
-  }
-
 });
