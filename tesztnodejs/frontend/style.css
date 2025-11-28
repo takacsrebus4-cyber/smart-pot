@@ -528,3 +528,18 @@
   from {opacity: 0;}
   to {opacity:1 ;}
 }
+
+/* Add Plant Button */
+.add-plant {
+    background-color: var(--primary-green);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.add-plant:hover {
+    background-color: var(--secondary-green);
+}

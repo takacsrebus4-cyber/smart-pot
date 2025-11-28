@@ -97,24 +97,6 @@ body {
   font-size: 14px;
 }
         
-.remember-me {
-  display: flex;
-  align-items: center;
-}
-        
-.remember-me input {
-  margin-right: 5px;
-}
-        
-.forgot-password {
-  color: var(--success);
-  text-decoration: none;
-}
-        
-.forgot-password:hover {
-  text-decoration: underline;
-}
-        
 .login-btn {
   background:  var(--primary-green);
   color: white;
@@ -192,4 +174,32 @@ body {
   max-width: 400px; 
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+
+
+
+.upload_btn, .cancel_btn {
+  width: 49.2%;
+  height: 40px;
+  border-radius: 5px;
+  border-color: var(--primary-green);
+  font-size: 15px;
+}
+
+.upload_btn:hover, .cancel_btn:hover {
+    background-color: var(--primary-green);
+    color: var(--light-green);
+}
+
+/* Add a color to the "no" button */
+.cancel_btn {
+  background-color: var(--light-green);
+  color: var(--secondary-green);
+}
+
+/* Add a color to the "logout" button */
+.upload_btn {
+  background-color: var(--secondary-green);
+  color: var(--light-green);
 }

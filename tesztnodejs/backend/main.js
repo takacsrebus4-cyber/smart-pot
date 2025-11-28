@@ -59,7 +59,7 @@ app.post("/login", async (req, res) => {
           for (j = 0; j < userinfo.length; j++) {
             if (username == userinfo[j].username) {
               console.log("User found in userinfo array, updating tokens.");
-              userinfo[j] = {accessToken: token, refreshToken: refreshToken };
+              userinfo[j] = { accessToken: token, refreshToken: refreshToken };
               console.log("Userinfo array updated:", userinfo);
               existingUser = true;
               break;
@@ -243,6 +243,47 @@ app.post("/upload/plant", async (req, res) => {
   });
 });
 
+app.post("/upload/current_plant", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  var success = false;
+
+  console.log(req.body);
+  var current_plant_table = "current_plants";
+  var plants_data_table = "plants_data";
+  var plant_name = req.body.plant_name;
+  var user_id = 5  // userinfo[0].id;
+
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    connection.query(`SELECT * FROM ${plants_data_table} WHERE name="${plant_name}";`, async (err, result) => {
+      if (result.length == 0) {
+        console.log("Plant not found in plants_data table");
+        connection.release();
+        res.json({ success: false });
+      }
+      else {
+        console.log("Plant found in plants_data table");
+        db.getConnection(async (err, connection) => {
+          console.log("Inserting current plant into current_plants table");
+          if (err) throw (err)
+          connection.query(`INSERT INTO ${current_plant_table}
+      (plant_name, user_id) VALUES("${plant_name}", ${user_id});`, async (err, result) => {
+            console.log(result.affectedRows);
+            if (result.affectedRows > 0) {
+              res.json({ success: true });
+            }
+            else {
+              res.json({ success: false });
+            }
+            connection.release();
+          });
+        });
+        connection.release();
+      }
+    });
+  });
+});
+
 app.post("/upload/user", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
@@ -259,7 +300,7 @@ app.post("/upload/user", async (req, res) => {
     )`, async (err, result) => {
         connection.release();
         console.log(result);
-        res.json({valid: true});
+        res.json({ valid: true });
       });
     }
   });

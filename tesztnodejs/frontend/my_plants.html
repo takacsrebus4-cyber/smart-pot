@@ -22,7 +22,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="./myplants.html" class="active"><i class="fas fa-leaf"></i> My Plants</a></li>
+                <li><a href="./my_plants.html" class="active"><i class="fas fa-leaf"></i> My Plants</a></li>
                 <li><a href="./analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
                 <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
                 <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
@@ -34,6 +34,7 @@
             <!-- Header -->
             <header class="header">
                 <h1>My Plants</h1>
+                <a href="./upload_current_plant.html" class="add-plant"><i class="fas fa-plus"></i> Add New Plant</a>
             </header>
 
             <!-- Plants Grid -->
@@ -176,18 +177,9 @@
         </form>
     </div>
 
-    <div id="userinfo" class="userinfo-modal">
-        <span onclick="document.getElementById('userinfo').style.display='none'" class="close"
-            title="Close Modal">×</span>
-        <div class="user-info-content">
-            <h2>User Profile</h2>
-            <p>Name: John Doe</p>
-            <p>Email:abc@gmail.com</p>
-        </div>
-    </div>
-
     <script src="./dashboard.js"></script>
-    <script src="./frontend.js"></script>
+    <script src="./token_validation.js"></script>
+    <script src="./logout.js"></script>
 </body>
 
 </html>

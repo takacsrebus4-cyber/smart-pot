@@ -22,7 +22,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="./dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="./myplants.html"><i class="fas fa-leaf"></i> My Plants</a></li>
+                <li><a href="./my_plants.html"><i class="fas fa-leaf"></i> My Plants</a></li>
                 <li><a href="./analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
                 <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
                 <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
@@ -197,6 +197,7 @@
         </main>
     </div>
 
+    <!--
     <div id="userinfo" class="userinfo-modal">
         <span onclick="document.getElementById('userinfo').style.display='none'" class="close"
             title="Close Modal">×</span>
@@ -206,6 +207,7 @@
             <p>Email:abc@gmail.com</p>
         </div>
     </div>
+    -->
 
     <div id="logout_modal" class="modal">
         <form class="modal-content" action="/action_page.php">
@@ -222,7 +224,8 @@
     </div>
 
     <script src="./dashboard.js"></script>
-    <script src="./frontend.js"></script>
+    <script src="./token_validation.js"></script>
+    <script src="./logout.js"></script>
 </body>
 
 </html>

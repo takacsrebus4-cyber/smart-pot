@@ -190,7 +190,7 @@ void upload_data(float light, int moisture, float temperature, float humidity) {
   String temperature_st = String(temperature);
   String humidity_st = String(humidity);
 
-  String jsonData = "{\"light\":" + String(light_st) + ",\"moisture\":" + String(moisture_st) + ",\"temperature\":" + String(temperature_st) + ",\"humidity\":" + String(humidity_st) + ",\"current_plant_id\":3}";
+  String jsonData = "{\"light\":" + light_st + ",\"moisture\":" + moisture_st + ",\"temperature\":" + temperature_st + ",\"humidity\":" + humidity_st + ",\"current_plant_id\":3}";
   
   //String jsonData = "{\"light\":" + String(23.6) + ",\"moisture\":" + String(550) + ",\"temperature\":" + String(32.00) + ",\"humidity\":" + String(65.10) + ",\"current_plant_id\":3}";
 
