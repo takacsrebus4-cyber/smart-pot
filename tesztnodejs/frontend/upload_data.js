@@ -1,13 +1,9 @@
 document.getElementById("button").addEventListener("click", async () => {
-    const humidity = document.getElementById("humidity").value;
-    const light = document.getElementById("light").value;
-    const moisture = document.getElementById("moisture").value;
-    const temperature = document.getElementById("temperature").value;
     const data = {
-        humidity: humidity,
-        light: light,
-        moisture: moisture,
-        temperature: temperature
+        humidity: document.getElementById("humidity").value,
+        light: document.getElementById("light").value,
+        moisture: document.getElementById("moisture").value,
+        temperature: document.getElementById("temperature").value
     };
     const response = await fetch('http://localhost:3000/upload/data', {
         method: 'POST',
@@ -16,5 +12,5 @@ document.getElementById("button").addEventListener("click", async () => {
         },
         body: JSON.stringify(data),
     });
-    console.log(response)
+    console.log("Data uploaded successfully!");    
 });

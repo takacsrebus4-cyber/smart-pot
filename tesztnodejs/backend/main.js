@@ -7,7 +7,6 @@ require("dotenv").config({ path: 'C:/Users/takac/OneDrive/Asztali gép/smart pot
 const app = express();
 const port = process.env.PORT;
 let refreshTokens = [];
-const userinfo = [];
 const cors = require('cors');
 const { table, Console } = require("console");
 const e = require("express");
@@ -19,7 +18,6 @@ app.use(express.urlencoded({
 );
 
 const db = mysql.createPool({
-  //connectionLimit: 10,
   host: process.env.HOST,
   user: process.env.USER,
   password: process.env.PASSWORD,
@@ -34,7 +32,6 @@ app.listen(port, () => {
 app.post("/login", async (req, res) => {
   let existingUser = false;
   res.set('Access-Control-Allow-Origin', '*');
-  //console.log("Login request received");
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
     var table = "users";
@@ -44,7 +41,6 @@ app.post("/login", async (req, res) => {
       connection.release();
       if (result.length == 0) {
         res.json({ userNotFound: true });
-        //console.log("---------> User not found");
       }
       else {
         const hashedPassword = result[0].password;
@@ -54,30 +50,10 @@ app.post("/login", async (req, res) => {
           const refreshToken = generateRefreshToken({ user: username });
           refreshTokens.push(refreshToken);
 
-
-          //If user already exists in userinfo array, update tokens
-          for (j = 0; j < userinfo.length; j++) {
-            if (username == userinfo[j].username) {
-              console.log("User found in userinfo array, updating tokens.");
-              userinfo[j] = { accessToken: token, refreshToken: refreshToken };
-              console.log("Userinfo array updated:", userinfo);
-              existingUser = true;
-              break;
-            }
-          }
-
-          //If user does not exist in userinfo array, add new entry
-          if (existingUser == false) {
-            userinfo.push({ id: result[0].id, username: username, accessToken: token, refreshToken: refreshToken });
-            //console.log("User not found in userinfo array, adding new entry.");
-            console.log("Userinfo array updated:", userinfo);
-          }
-
-          res.json({ accessToken: token });
+          res.json({ accessToken: token, refreshToken: refreshToken, userid: result[0].id });
         }
         else {
           res.json({ accessToken: undefined });
-          //console.log("---------> Password Incorrect")
         }
       }
     });
@@ -86,21 +62,9 @@ app.post("/login", async (req, res) => {
 
 app.post("/logout", (req, res) => {
 
-  let logout = false;
-
   refreshTokens = refreshTokens.filter((c) => c != req.body.refreshToken)
-  //remove the old refreshToken from the refreshTokens list
 
-  for (j = 0; j < userinfo.length; j++) {
-    if (userinfo[j].username == req.body.username) {
-      userinfo.splice(j, 1);
-      console.log(userinfo)
-      logout = true;
-      break;
-    }
-  }
-
-  res.json(logout);
+  res.json({logout: true});
 
 });
 
@@ -122,33 +86,7 @@ app.post("/refreshToken", (req, res) => {
 
     refreshTokens.push(refreshToken);
 
-    for (j = 0; j < 1; j++) {
-      if (userinfo[j].username == username) {
-        userinfo[j] = { username: username, accessToken: accessToken, refreshToken: refreshToken };
-        break;
-      }
-    }
-
     res.json({ accessToken: accessToken, refreshToken: refreshToken });
-  }
-
-});
-
-app.post("/getUserinfo", (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-
-  var found = false;
-
-  for (j = 0; j < userinfo.length; j++) {
-    if (userinfo[j].username == req.body.username) {
-      found = true;
-      res.json(userinfo[j]);
-      break;
-    }
-  }
-
-  if (found == false) {
-    res.json({ found: false });
   }
 
 });
@@ -251,7 +189,7 @@ app.post("/upload/current_plant", async (req, res) => {
   var current_plant_table = "current_plants";
   var plants_data_table = "plants_data";
   var plant_name = req.body.plant_name;
-  var user_id = 5  // userinfo[0].id;
+  var user_id = 5  // req.body.userid;
 
   db.getConnection(async (err, connection) => {
     if (err) throw (err)

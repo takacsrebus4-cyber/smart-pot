@@ -10,13 +10,13 @@ document.getElementById("no_btn").addEventListener("click", function (evt) {
 
 
 document.getElementById("logout_btn").addEventListener("click", function (evt) {
-    if (username === undefined || username === null) {
+    if (localStorage.getItem("username") === undefined || localStorage.getItem("username") === null) {
         alert("You are not logged in, redirecting to login page...");
         window.location.href = "./login.html";
     }
     const logoutBody = {
-        username: username,
-        refreshToken: refreshToken
+        username: localStorage.getItem("username"),
+        refreshToken: localStorage.getItem("refreshToken")
     };
     fetch(host + '/logout', {
         method: 'POST',
@@ -25,15 +25,12 @@ document.getElementById("logout_btn").addEventListener("click", function (evt) {
         },
         body: JSON.stringify(logoutBody),
     }).then(res => res.json()).then(response => {
-        if (response.logout === false) {
+        if (response.logout != true) {
             alert("Logout failed, please try again.");
         }
         else {
-            username = "";
-            refreshToken = "";
             localStorage.clear();
-
-            //alert("Logged out successfully, redirecting to login page...");
+            
             window.location.href = "./login.html";
         }
     });

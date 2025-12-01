@@ -1,5 +1,6 @@
 const host = 'http://127.0.0.1:3000'
 
+
 document.getElementById("loginForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const data = {
@@ -22,8 +23,11 @@ document.getElementById("loginForm").addEventListener("submit", (e) => {
                 document.getElementById("passwordError").style.display = 'block';
             }
             else {
-                //console.log(response.accessToken)
                 localStorage.setItem("username", username);
+                localStorage.setItem("accessToken", response.accessToken);
+                localStorage.setItem("refreshToken", response.refreshToken);
+                localStorage.setItem("userid", response.userid);
+
                 window.location.href = "./dashboard.html";
             }
         }
