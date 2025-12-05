@@ -1,63 +1,135 @@
+const dates = [];
+const soilMoistureLevels = [];
+const lightIntensityLevels = [];
+const temperatureLevels = [];
+const humidityLevels = [];
 
 
-const xValues = ["2025/11/01", "2025/11/02", "2025/11/03", "2025/11/04", "2025/11/05", "2025/11/06", "2025/11/07", "2025/11/08", "2025/11/09", "2025/11/10", "2025/11/11"];
-const yValues = [7, 8, 8, 9, 9, 9, 10, 11, 14, 14, 15];
-const zValues = [14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14];
-const aValues = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+document.body.onload = function (e) {
+    e.preventDefault();
+    document.getElementById("loadbtn").click();
+}
 
-const ctx = document.getElementById('myChart');
-
-new Chart(ctx, {
-    type: "line",
-    data: {
-        labels: xValues,
-        datasets: [{
-            label: "Moisture Level",
-            fill: false,
-            lineTension: 0,
-            backgroundColor: "rgba(0,0,255,1.0)",
-            borderColor: "rgba(0,0,255,1.0)",
-            borderWidth: 4,
-            data: yValues
-        }, {
-            label: "Maximum Moisture Level",
-            data: zValues,
-            fill: { value: 20 },
-            lineTension: 0,
-            backgroundColor: "rgba(255, 0, 0, 0.5)",
-            borderColor: "rgba(255, 0, 0,1.0)",
-            borderWidth: 0,
-            pointRadius: 0,
-        }, {
-            label: "Minimum Moisture Level",
-            data: aValues,
-            fill: true,
-            lineTension: 0,
-            backgroundColor: "rgba(255, 0, 0, 0.5)",
-            borderColor: "rgba(255, 0, 0,1.0)",
-            borderWidth: 0,
-            pointRadius: 0,
-        }]
-    },
-    options: {
-        plugins: {
-            legend: { display: true },
-            title: {
-                display: true,
-                text: "Average Moisture Level of the Plant Over the Week",
-                font: { size: 16 },
-                maintainAspectRatio: false
-            },
+document.getElementById("loadbtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    fetch("http://127.0.0.1:3000/query/daily_average", {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
         },
-        scales: {
-            x: {
-                label: { display: true, text: "Date" },
-            },
-            y: {
-                label: { display: true, text: "Moisture Level (%)" },
-                min: 0,
-                max: 20,
-            }
+    }).then(res => res.json()).then(response => {
+        console.log(response);
+
+
+        for (let i = 0; i < response.length; i++) {
+            dates.push(response[i].date);
+            soilMoistureLevels.push(parseFloat(response[i].avg_moisture));
+            lightIntensityLevels.push(parseFloat(response[i].avg_light));
+            temperatureLevels.push(parseFloat(response[i].avg_temperature));
+            humidityLevels.push(parseFloat(response[i].avg_humidity));
         }
-    }
+
+        const minSoilMoisture = Array(dates.length).fill(200);
+        const maxSoilMoisture = 800;
+        const minLightIntensity = Array(dates.length).fill(20);
+        const maxLightIntensity = 200;
+
+
+        //Soil Moisture Level Chart
+        const soil_moisture_chart = document.getElementById('soilMoistureChart');
+        new Chart(soil_moisture_chart, {
+            type: "line",
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: "Average Soil Moisture Level",
+                    fill: false,
+                    lineTension: 0,
+                    backgroundColor: "rgba(0,0,255,1.0)",
+                    borderColor: "rgba(0,0,255,1.0)",
+                    borderWidth: 4,
+                    data: soilMoistureLevels,
+                }, {
+                    label: "Ideal Soil Moisture Level",
+                    data: minSoilMoisture,
+                    fill: { value: maxSoilMoisture },
+                    lineTension: 0,
+                    backgroundColor: "rgba(54, 232, 27, 0.4)",
+                    borderColor: "rgba(255, 0, 0,1.0)",
+                    borderWidth: 0,
+                    pointRadius: 0,
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: true },
+                    title: {
+                        display: true,
+                        text: "Average Soil Moisture Level of the Plant Over the Week",
+                        font: { size: 16 },
+                        maintainAspectRatio: false
+                    },
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: "Date" },
+                    },
+                    y: {
+                        title: { display: true, text: "Soil Moisture Level (%)" },
+                        min: 0,
+                        max: 1024,
+                    }
+                }
+            }
+        });
+
+        //Light Intensity Level Chart
+        const light_intensity_chart = document.getElementById('lightIntensityChart');
+        new Chart(light_intensity_chart, {
+            type: "line",
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: "Average Light Intensity",
+                    fill: false,
+                    lineTension: 0,
+                    backgroundColor: "rgba(0,0,255,1.0)",
+                    borderColor: "rgba(0,0,255,1.0)",
+                    borderWidth: 4,
+                    data: lightIntensityLevels,
+                }, {
+                    label: "Ideal Moisture Level",
+                    data: minLightIntensity,
+                    fill: { value: maxLightIntensity },
+                    lineTension: 0,
+                    backgroundColor: "rgba(54, 232, 27, 0.4)",
+                    borderColor: "rgba(255, 0, 0,1.0)",
+                    borderWidth: 0,
+                    pointRadius: 0,
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: true },
+                    title: {
+                        display: true,
+                        text: "Average Intensity of Light the Plant Received Over the Week",
+                        font: { size: 16 },
+                        maintainAspectRatio: false
+                    },
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: "Date" },
+                    },
+                    y: {
+                        title: { display: true, text: "Light Intensity (lux)" },
+                        min: 0,
+                        max: 300,
+                    }
+                }
+
+            }
+        });
+    });
 });

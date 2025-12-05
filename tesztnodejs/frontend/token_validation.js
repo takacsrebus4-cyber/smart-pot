@@ -8,10 +8,9 @@ document.body.onload = function () {
 
 //token validation on dashboard click
 document.getElementById("dashboard").addEventListener("click", function (evt) {
-    if (localStorage.getItem("username") === undefined || localStorage.getItem("username") === null) {
+    if (localStorage.getItem("accessToken") === undefined || localStorage.getItem("accessToken") === null) {
         window.location.href = "./login.html";
     }
-    localStorage.setItem("refreshToken", response.refreshToken);
     const validateTokenBody = {
         accessToken: localStorage.getItem("accessToken"),
         refreshToken: localStorage.getItem("refreshToken")
@@ -40,6 +39,8 @@ document.getElementById("dashboard").addEventListener("click", function (evt) {
                     },
                     body: JSON.stringify(refreshTokenBody),
                 }).then(res => res.json()).then(response => {
+                    localStorage.setItem("accessToken", response.accessToken);
+                    localStorage.setItem("refreshToken", response.refreshToken);
                 });
             }
         }

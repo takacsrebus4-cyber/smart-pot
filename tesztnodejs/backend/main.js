@@ -64,7 +64,7 @@ app.post("/logout", (req, res) => {
 
   refreshTokens = refreshTokens.filter((c) => c != req.body.refreshToken)
 
-  res.json({logout: true});
+  res.json({ logout: true });
 
 });
 
@@ -93,14 +93,32 @@ app.post("/refreshToken", (req, res) => {
 
 app.get("/query/plants", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "plants_data"
-    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
-      res.json(result);
-      connection.release();
+  if (req.body.accessToken == undefined || req.body.refreshToken == undefined) {
+    res.status(400).json({ tokenValid: false });
+  }
+  else {
+    fetch("http:127.0.0.1:3000/validateToken", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'accessToken': req.body.accessToken || '',
+      },
+    }).then(res => res.json()).then(response => {
+      if (response.tokenValid == true) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err)
+          var table = "plants_data"
+          connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+            res.json(result);
+            connection.release();
+          });
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
     });
-  });
+  }
 });
 
 app.get("/query/users", async (req, res) => {
@@ -151,6 +169,24 @@ app.get("/query/weekly_data", async (req, res) => {
   });
 });
 
+app.get("/query/daily_average", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "weekly_data"
+    connection.query(`SELECT DATE_FORMAT(timestamp, "%Y/%m/%d") as date, 
+      AVG(light) as avg_light, 
+      AVG(moisture) as avg_moisture,
+      AVG(temperature) as avg_temperature,
+      AVG(humidity) as avg_humidity
+      FROM ${table} 
+      GROUP BY DATE(timestamp);`, async (err, result) => {
+      res.json(result);
+      connection.release();
+    });
+  });
+});
+
 app.post("/upload/plant", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   console.log("Upload request received");
@@ -169,14 +205,19 @@ app.post("/upload/plant", async (req, res) => {
     var min_humidity = req.body.min_humidity;
     var max_humidity = req.body.max_humidity;
     connection.query(`INSERT INTO ${table}
-        (name, scientific_name, min_Light, max_Light, min_moisture, max_moisture, min_temperature, max_temperature, min_humidity, max_humidity)
+        (name, scientific_name, min_light, max_light, min_moisture, max_moisture, min_temperature, max_temperature, min_humidity, max_humidity)
         VALUES(
           "${name}", "${scientific_name}", ${min_light}, ${max_light}, ${min_moisture}, ${max_moisture},
-          ${min_temperature}, ${max_temperature}, ${max_humidity}, ${min_humidity}
+          ${min_temperature}, ${max_temperature}, ${min_humidity}, ${max_humidity}
         )`, async (err, result) => {
-      connection.release();
       console.log(result);
-      res.json("Sikeres feltöltés");
+      if(result != undefined && result.affectedRows > 0){
+        res.json({success: true});
+      }
+      else{
+        res.json({success: false});
+      }
+      connection.release();
     });
   });
 });
@@ -276,6 +317,60 @@ app.post("/upload/data", async (req, res) => {
       console.log("Result: ");
       console.log(result);
       res.json("Sikeres feltöltés");
+    });
+  });
+});
+
+
+//még nem jó!!!!!
+app.delete("/delete/current_plant", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  console.log("Delete current plant request received");
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err);
+    console.log(req.body);
+    var table = "current_plants"
+    var plant_id = req.body.plant_id;
+    var userid = req.body.userid;
+    connection.query(`DELETE FROM ${table} WHERE (id=${plant_id} AND user_id=${userid});`, async (err, result) => {
+      console.log(result);
+      if (result != undefined && result.affectedRows > 0) {
+        res.json({ success: true });
+      }
+      else {
+        res.json({ success: false });
+      }
+      connection.release();
+    });
+  });
+});
+
+app.post("/current_plant_list", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  console.log("Current plant list request received");
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err);
+    console.log(req.body);
+    var table = "current_plants"
+    var userid = req.body.userid;
+    connection.query(`SELECT * FROM ${table} WHERE user_id=${userid};`, async (err, result) => {
+      console.log(result);
+        res.json(result);
+      connection.release();
+    });
+  });
+});
+
+app.get("/plant_name_list", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  console.log("Plant name list request received");
+  db.getConnection(async (err, connection) => {
+    if (err) throw (err)
+    var table = "plants_data"
+    connection.query(`SELECT name FROM ${table}`, async (err, result) => {
+      console.log("Result: " + result);
+      res.json(result);
+      connection.release();
     });
   });
 });

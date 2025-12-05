@@ -179,7 +179,7 @@ body {
 
 
 
-.upload_btn, .cancel_btn {
+.confirm_btn, .cancel_btn {
   width: 49.2%;
   height: 40px;
   border-radius: 5px;
@@ -187,8 +187,8 @@ body {
   font-size: 15px;
 }
 
-.upload_btn:hover, .cancel_btn:hover {
-    background-color: var(--primary-green);
+.confirm_btn:hover, .cancel_btn:hover {
+    background-color: var(--secondary-green);
     color: var(--light-green);
 }
 
@@ -199,7 +199,31 @@ body {
 }
 
 /* Add a color to the "logout" button */
-.upload_btn {
-  background-color: var(--secondary-green);
+.confirm_btn {
+  background-color: var(--primary-green);
   color: var(--light-green);
+}
+
+.loadbtn {
+    display: inline-block;
+    background-color: var(--primary-green);
+    color: var(--light-green);
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 15px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
+}
+.loadbtn:hover {
+    background-color: var(--secondary-green);
+}
+
+.plantSelect {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--light-text);
+    font-size: 16px;
 }

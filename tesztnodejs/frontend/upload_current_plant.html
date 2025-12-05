@@ -17,13 +17,14 @@
         </div>
 
         <form>
-            <div class="input-group">
-                <label for="plant_name">Plant name:</label>
-                <input type="text" id="plant_name" placeholder="Plant name" required>
-            </div>
+            <button type="button" id="loadbtn" class="loadbtn">Load Plants</button>
+            <select name="plantSelect" id="plantSelect" class="plantSelect">
+                <option value="" selected="selected">Select plant to add</option>
+            </select>
+            <br><br>
             <div class="clearfix">
                 <button type="button" id="cancel" class="cancel_btn">Cancel</button>
-                <button type="submit" id="upload" class="upload_btn">Upload</button>
+                <input type="submit" id="upload" class="confirm_btn" value="Upload">
             </div>
         </form>
     </div>

@@ -14,6 +14,8 @@
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --radius: 12px;
             --transition: all 0.3s ease;
+            --dark-red: #a10404;
+            --dark-green: #0b3404;
         }
 
         /* === Base Styles === */
@@ -541,5 +543,27 @@
     transition: var(--transition);
 }
 .add-plant:hover {
-    background-color: var(--secondary-green);
+    background-color: var(--dark-green);
+}
+
+
+/* Delete Plant Button */
+.delete-plant {
+    background-color: var(--warning);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.delete-plant:hover {
+    background-color: var(--dark-red);
+}
+
+/* Load Button */
+
+.loadbtn {
+    display: none;
 }

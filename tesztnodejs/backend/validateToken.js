@@ -14,7 +14,7 @@ app.listen(auth_port, ()=> {
 
 app.post("/validateToken", validateToken, (req, res)=>{
   res.set('Access-Control-Allow-Origin', '*');
-  //console.log("Token is valid");
+  
   res.json({tokenValid: true});
 });
 

@@ -1,4 +1,5 @@
-document.getElementById("button").addEventListener("click", async () => {
+document.getElementById("button").addEventListener("click", async (e) => {
+    e.preventDefault();
     const data = {
         name: document.getElementById("name").value,
         scientific_name: document.getElementById("scientific_name").value,
@@ -11,12 +12,19 @@ document.getElementById("button").addEventListener("click", async () => {
         max_temperature: document.getElementById("max_temperature").value,
         min_temperature: document.getElementById("min_temperature").value
     };
-    const response = await fetch('http://localhost:3000/upload/plant', {
+    fetch('http://localhost:3000/upload/plant', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
+    }).then(res => res.json()).then(response => {
+        console.log(response);
+        if(response.success){
+            alert("Plant uploaded successfully!");
+        }
+        else{
+            alert("Failed to upload plant.");
+        }
     });
-    alert("Plant uploaded successfully!");
 });

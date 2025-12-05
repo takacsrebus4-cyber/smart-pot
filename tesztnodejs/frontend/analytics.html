@@ -31,16 +31,26 @@
       <!-- Header -->
       <header class="header">
         <h1>Analytics</h1>
+        <button id="loadbtn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Refresh Data</button>
+        <h3>Analyze your plants conditions over the past week</h3>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
       </header>
 
       <!-- Analytics Content -->
       <section class="analytics-section">
-        <h2>Plant Growth Analytics</h2>
-        <p>Analyze the growth patterns and health metrics of your plants over time.</p>
+        <h2>Soil Moisture Levels</h2>
         <!-- Chart Container -->
         <div class="chart-container">
-          <canvas id="myChart" class="fa-chart-line" style="width:100%"></canvas>
+          <canvas id="soilMoistureChart" class="fa-chart-line" style="width:100%"></canvas>
+        </div>
+      </section>
+
+      <!-- Analytics Content -->
+      <section class="analytics-section">
+        <h2>Light Intensity Levels</h2>
+        <!-- Chart Container -->
+        <div class="chart-container">
+          <canvas id="lightIntensityChart" class="fa-chart-line" style="width:100%"></canvas>
         </div>
       </section>
 
@@ -63,7 +73,7 @@
   </div>
 
   <div id="userinfo" class="userinfo-modal">
-    <span onclick="document.getElementById('userinfo').style.display='none'" class="close" title="Close Modal">×</span>
+    <span onclick="document.getElementById('userinfo').style.display='block'" class="close" title="Close Modal">×</span>
     <div class="user-info-content">
       <h2>User Profile</h2>
       <p>Name: John Doe</p>

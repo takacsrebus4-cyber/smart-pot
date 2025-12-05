@@ -28,12 +28,6 @@ int status = WL_IDLE_STATUS;
 //IPAddress server(74,125,232,128);  // numeric IP for Google (no DNS)
 char server[] = "smartpot.taki02.org";  // name address for Google (using DNS)
 
-/*
-char light_st[] = "";
-char moisture_st[] = "";
-char temperature_st[] = "";
-char humidity_st[] = "";*/
-
 // Initialize the Ethernet client library
 // with the IP address and port of the server
 // that you want to connect to (port 80 is default for HTTP):
@@ -54,6 +48,14 @@ BH1750 lightMeter;
 //   https://learn.adafruit.com/dht/overview
 
 DHT_Unified dht(DHTPIN, DHTTYPE);
+
+const int AirValue = 670;
+const int WaterValue = 430;
+int soilMoistureValue = 0;
+int mappedSoilMoisture = 0;
+float sum = 0;
+float i = 1;
+float avg = 0;
 
 uint32_t delayMS;
 
@@ -130,11 +132,24 @@ void loop() {
 
 
   //measureing soil moisture
-  //wet: 370-450 / moist: 440-520 / medium: 510-600 / lightly wet: 590-670 / dry: 660-750
-  int moisture;
-  moisture = analogRead(0);  //connect sensor to Analog 0
-  Serial.print("Moisture: ");
-  Serial.println(moisture);
+  int soilMoistureValue;
+  soilMoistureValue = analogRead(0);
+  Serial.println("Analog: " + String(soilMoistureValue));
+
+  mappedSoilMoisture = map(soilMoistureValue, AirValue, WaterValue, 0, 1023);
+  
+  if (mappedSoilMoisture > 1023) {
+    mappedSoilMoisture = 1023;
+  } else if(mappedSoilMoisture < 0) {
+    mappedSoilMoisture = 0;
+  }
+  
+  sum = sum + mappedSoilMoisture;
+  avg = sum / i;
+  i++;
+
+  Serial.print("Soil Moisture: ");
+  Serial.println(avg);
 
 
 //sending data to server
@@ -142,7 +157,7 @@ void loop() {
   // if you get a connection, report back via serial:
   if (client.connect(server, 443)) {
     Serial.println("connected to server");
-    upload_data(light, moisture, temperature, humidity);
+    upload_data(light, avg, temperature, humidity);
   } else {
     Serial.println("connection failed");
   }
@@ -192,8 +207,7 @@ void upload_data(float light, int moisture, float temperature, float humidity) {
 
   String jsonData = "{\"light\":" + light_st + ",\"moisture\":" + moisture_st + ",\"temperature\":" + temperature_st + ",\"humidity\":" + humidity_st + ",\"current_plant_id\":3}";
   
-  //String jsonData = "{\"light\":" + String(23.6) + ",\"moisture\":" + String(550) + ",\"temperature\":" + String(32.00) + ",\"humidity\":" + String(65.10) + ",\"current_plant_id\":3}";
-
+  
   Serial.println(jsonData);
   
   // Make a HTTP request:

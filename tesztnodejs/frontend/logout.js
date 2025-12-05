@@ -15,7 +15,6 @@ document.getElementById("logout_btn").addEventListener("click", function (evt) {
         window.location.href = "./login.html";
     }
     const logoutBody = {
-        username: localStorage.getItem("username"),
         refreshToken: localStorage.getItem("refreshToken")
     };
     fetch(host + '/logout', {
@@ -30,7 +29,7 @@ document.getElementById("logout_btn").addEventListener("click", function (evt) {
         }
         else {
             localStorage.clear();
-            
+
             window.location.href = "./login.html";
         }
     });
