@@ -227,3 +227,15 @@ body {
     border: 1px solid var(--light-text);
     font-size: 16px;
 }
+
+.plantSelect:focus {
+    border-color: var(--primary-green);
+    box-shadow: var(--shadow);
+    outline: none;
+}
+
+p.warning {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--warning);
+}

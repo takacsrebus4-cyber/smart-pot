@@ -10,6 +10,7 @@ let refreshTokens = [];
 const cors = require('cors');
 const { table, Console } = require("console");
 const e = require("express");
+const jwt = require("jsonwebtoken");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({
@@ -29,8 +30,9 @@ app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
 
+//login
+//no authorization needed
 app.post("/login", async (req, res) => {
-  let existingUser = false;
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
@@ -60,6 +62,8 @@ app.post("/login", async (req, res) => {
   });
 });
 
+//logout
+//no authorization needed????
 app.post("/logout", (req, res) => {
 
   refreshTokens = refreshTokens.filter((c) => c != req.body.refreshToken)
@@ -68,6 +72,8 @@ app.post("/logout", (req, res) => {
 
 });
 
+//refresh token
+//authorization implemented
 app.post("/refreshToken", (req, res) => {
   let refreshToken = req.body.refreshToken;
   const username = req.body.username;
@@ -91,20 +97,35 @@ app.post("/refreshToken", (req, res) => {
 
 });
 
-app.get("/query/plants", async (req, res) => {
+
+
+
+
+//queries
+
+//query plant_data table
+//authorized for normal users
+app.get("/query/plant_data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  if (req.body.accessToken == undefined || req.body.refreshToken == undefined) {
-    res.status(400).json({ tokenValid: false });
+
+  var token = "";
+
+  //authorization header check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+    token = req.headers['authorization'].split(' ')[1];
+  }
+
+  //token existence check
+  if (!token) {
+    res.json({ tokenValid: false });
   }
   else {
-    fetch("http:127.0.0.1:3000/validateToken", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'accessToken': req.body.accessToken || '',
-      },
-    }).then(res => res.json()).then(response => {
-      if (response.tokenValid == true) {
+    //token validity check
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
         db.getConnection(async (err, connection) => {
           if (err) throw (err)
           var table = "plants_data"
@@ -121,6 +142,8 @@ app.get("/query/plants", async (req, res) => {
   }
 });
 
+//query users table
+//needs higher level of security
 app.get("/query/users", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
@@ -133,60 +156,166 @@ app.get("/query/users", async (req, res) => {
   });
 });
 
+//query current_plants table
+//needs higher level of security
 app.get("/query/current_plants", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "current_plants"
-    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
-      res.json(result);
-      connection.release();
+  var token = req.headers['authorization'].split(' ')[1];
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err)
+          var table = "current_plants"
+          connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+            res.json(result);
+            connection.release();
+          });
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
     });
-  });
+  }
 });
 
+//query latest data from weekly_data table
+//authorized for normal users
 app.get("/query/latest_data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "weekly_data"
-    connection.query(`SELECT * FROM ${table} ORDER BY timestamp DESC LIMIT 1;`, async (err, result) => {
-      res.json(result);
-      connection.release();
+  var token = "";
+
+  //authorization header check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+    token = req.headers['authorization'].split(' ')[1];
+  }
+
+  //token existence check
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    //token validity check
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err)
+          var table = "weekly_data"
+          connection.query(`SELECT * FROM ${table} ORDER BY timestamp DESC LIMIT 1;`, async (err, result) => {
+            res.json(result);
+            connection.release();
+          });
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
     });
-  });
+  }
 });
 
+//query all data from weekly_data table
+//authorized for normal users
 app.get("/query/weekly_data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "weekly_data"
-    connection.query(`SELECT * FROM ${table}`, async (err, result) => {
-      res.json(result);
-      connection.release();
+  
+  var token = "";
+
+  //authorization header check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+    token = req.headers['authorization'].split(' ')[1];
+  }
+
+  //token existence check
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    //token validity check
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err)
+          var table = "weekly_data"
+          connection.query(`SELECT * FROM ${table}`, async (err, result) => {
+            res.json(result);
+            connection.release();
+          });
+
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
     });
-  });
+  }
 });
 
+//query daily averages from weekly_data table
+//authorized for normal users
 app.get("/query/daily_average", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "weekly_data"
-    connection.query(`SELECT DATE_FORMAT(timestamp, "%Y/%m/%d") as date, 
-      AVG(light) as avg_light, 
-      AVG(moisture) as avg_moisture,
-      AVG(temperature) as avg_temperature,
-      AVG(humidity) as avg_humidity
-      FROM ${table} 
-      GROUP BY DATE(timestamp);`, async (err, result) => {
-      res.json(result);
-      connection.release();
+
+  var token = "";
+
+  //authorization header check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+      token = req.headers['authorization'].split(' ')[1];
+  }
+
+  //token existence check
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    //token validity check
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err)
+          var table = "weekly_data"
+          connection.query(`SELECT DATE_FORMAT(timestamp, "%Y/%m/%d") as date, 
+          AVG(light) as avg_light, 
+          AVG(moisture) as avg_moisture,
+          AVG(temperature) as avg_temperature,
+          AVG(humidity) as avg_humidity
+          FROM ${table} 
+          GROUP BY DATE(timestamp);`, async (err, result) => {
+            res.json(result);
+            connection.release();
+          });
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
     });
-  });
+  }
 });
 
+
+
+
+
+
+//uploads
+
+//upload into plant_data table
+//needs higher level of security
 app.post("/upload/plant", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   console.log("Upload request received");
@@ -211,58 +340,83 @@ app.post("/upload/plant", async (req, res) => {
           ${min_temperature}, ${max_temperature}, ${min_humidity}, ${max_humidity}
         )`, async (err, result) => {
       console.log(result);
-      if(result != undefined && result.affectedRows > 0){
-        res.json({success: true});
+      if (result != undefined && result.affectedRows > 0) {
+        res.json({ success: true });
       }
-      else{
-        res.json({success: false});
+      else {
+        res.json({ success: false });
       }
       connection.release();
     });
   });
 });
 
+//upload into current_plants table
+//authorized for normal users
 app.post("/upload/current_plant", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  var success = false;
 
-  console.log(req.body);
+  var token = "";
+
+  //authorization header check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+    token = req.headers['authorization'].split(' ')[1];
+  }
+
   var current_plant_table = "current_plants";
   var plants_data_table = "plants_data";
   var plant_name = req.body.plant_name;
-  var user_id = 5  // req.body.userid;
+  var user_id = req.body.userid;
 
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    connection.query(`SELECT * FROM ${plants_data_table} WHERE name="${plant_name}";`, async (err, result) => {
-      if (result.length == 0) {
-        console.log("Plant not found in plants_data table");
-        connection.release();
-        res.json({ success: false });
-      }
-      else {
-        console.log("Plant found in plants_data table");
+  //token existence check
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    //token validity check
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
         db.getConnection(async (err, connection) => {
-          console.log("Inserting current plant into current_plants table");
           if (err) throw (err)
-          connection.query(`INSERT INTO ${current_plant_table}
-      (plant_name, user_id) VALUES("${plant_name}", ${user_id});`, async (err, result) => {
-            console.log(result.affectedRows);
-            if (result.affectedRows > 0) {
-              res.json({ success: true });
-            }
-            else {
+          connection.query(`SELECT * FROM ${plants_data_table} WHERE name="${plant_name}";`, async (err, result) => {
+            connection.release();
+            if (result.length == 0) {
+              console.log("Plant not found in plants_data table");
+              connection.release();
               res.json({ success: false });
             }
-            connection.release();
+            else {
+              console.log("Plant found in plants_data table");
+              db.getConnection(async (err, connection) => {
+                console.log("Inserting current plant into current_plants table");
+                if (err) throw (err)
+                connection.query(`INSERT INTO ${current_plant_table}
+                (plant_name, user_id) VALUES("${plant_name}", ${user_id});`, async (err, result) => {
+                  connection.release();
+                  if (result.affectedRows > 0) {
+                    res.json({ success: true });
+                  }
+                  else {
+                    res.json({ success: false });
+                  }
+                });
+              });
+            }
           });
         });
-        connection.release();
+      }
+      else {
+        res.json({ tokenValid: false });
       }
     });
-  });
+  }
 });
 
+//upload into users table
+//no authorization needed
 app.post("/upload/user", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
@@ -285,6 +439,8 @@ app.post("/upload/user", async (req, res) => {
   });
 });
 
+//upload into weekly_data table
+//needs to be authorized for arduino!!!!!!!!
 app.post("/upload/data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   console.log("Data upload request received");
@@ -316,61 +472,222 @@ app.post("/upload/data", async (req, res) => {
       connection.release();
       console.log("Result: ");
       console.log(result);
-      res.json("Sikeres feltöltés");
-    });
-  });
-});
-
-
-//még nem jó!!!!!
-app.delete("/delete/current_plant", async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  console.log("Delete current plant request received");
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err);
-    console.log(req.body);
-    var table = "current_plants"
-    var plant_id = req.body.plant_id;
-    var userid = req.body.userid;
-    connection.query(`DELETE FROM ${table} WHERE (id=${plant_id} AND user_id=${userid});`, async (err, result) => {
-      console.log(result);
       if (result != undefined && result.affectedRows > 0) {
         res.json({ success: true });
       }
       else {
         res.json({ success: false });
       }
-      connection.release();
     });
   });
 });
 
+
+
+
+
+
+//deletions
+
+//delete plant data from weekly_data table
+//authorized for normal users
+app.delete("/delete/data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  var token = "";
+
+  //authorization check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+  token = req.headers['authorization'].split(' ')[1];
+  }
+
+  //token existence check
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    //token validity check
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err);
+          console.log(req.body);
+          var table = "weekly_data"
+          var plant_ids = "";
+          for (i = 0; i < req.body.plant_ids.length; i++) {
+            plant_ids += req.body.plant_ids[i];
+            if (i != req.body.plant_ids.length - 1) {
+              plant_ids += ", ";
+            }
+          }
+          if (plant_ids != "") {
+            connection.query(`DELETE FROM ${table} WHERE current_plant_id IN (${plant_ids});`, async (err, result) => {
+              connection.release();
+              console.log(result);
+              if (result != undefined) {
+                res.json({ success: true });
+              }
+              else {
+                res.json({ success: false });
+              }
+            });
+          }
+          else {
+            console.log("No plant IDs provided, no data to delete.");
+            res.json({ dataFound: false });
+          }
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
+    });
+  }
+});
+
+//delete plant from current_plants table
+//authorized for normal users
+app.delete("/delete/current_plant", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  var token = "";
+
+  //authorization check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+  token = req.headers['authorization'].split(' ')[1];
+  }
+
+
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err);
+          console.log(req.body);
+          var table = "current_plants"
+          var plant_ids = "";
+          for (i = 0; i < req.body.plant_ids.length; i++) {
+            plant_ids += req.body.plant_ids[i];
+            if (i != req.body.plant_ids.length - 1) {
+              plant_ids += ", ";
+            }
+          }
+          if (plant_ids != "") {
+            connection.query(`DELETE FROM ${table} WHERE id IN (${plant_ids});`, async (err, result) => {
+              connection.release();
+              console.log(result);
+              if (result != undefined) {
+                res.json({ success: true });
+              }
+              else {
+                res.json({ success: false });
+              }
+            });
+          }
+          else {
+            console.log("No plant IDs provided, no plants to delete.");
+            res.json({ dataFound: false });
+          }
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
+    });
+  }
+});
+
+//delete user from users table
+//authorized for normal users
+app.delete("/delete/user", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  var token = "";
+
+  //check if authorization header exists
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+  token = req.headers['authorization'].split(' ')[1];
+  }
+
+  //check if token exists
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    //check if token is valid
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err);
+          console.log(req.body);
+          var table = "users"
+          var userid = req.body.userid;
+          connection.query(`DELETE FROM ${table} WHERE id=${userid};`, async (err, result) => {
+            console.log(result);
+            if (result != undefined && result.affectedRows > 0) {
+              res.json({ success: true });
+            }
+            else {
+              res.json({ success: false });
+            }
+            connection.release();
+          });
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
+    });
+  }
+});
+
+//lists plants belonging to the user
+//authorized for normal users
 app.post("/current_plant_list", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  console.log("Current plant list request received");
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err);
-    console.log(req.body);
-    var table = "current_plants"
-    var userid = req.body.userid;
-    connection.query(`SELECT * FROM ${table} WHERE user_id=${userid};`, async (err, result) => {
-      console.log(result);
-        res.json(result);
-      connection.release();
-    });
-  });
-});
 
-app.get("/plant_name_list", async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  console.log("Plant name list request received");
-  db.getConnection(async (err, connection) => {
-    if (err) throw (err)
-    var table = "plants_data"
-    connection.query(`SELECT name FROM ${table}`, async (err, result) => {
-      console.log("Result: " + result);
-      res.json(result);
-      connection.release();
+  var token = "";
+
+  //authorization header check
+  if (!req.headers['authorization']) {
+    res.json({ tokenValid: false });
+  }
+  else{
+    token = req.headers['authorization'].split(' ')[1];
+  }
+
+  //token existence check
+  if (!token) {
+    res.json({ tokenValid: false });
+  }
+  else {
+    //token validity check
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      if (!err) {
+        db.getConnection(async (err, connection) => {
+          if (err) throw (err);
+          console.log(req.body);
+          var table = "current_plants"
+          var userid = req.body.userid;
+          connection.query(`SELECT * FROM ${table} WHERE user_id=${userid};`, async (err, result) => {
+            connection.release();
+            console.log(result);
+            res.json(result);
+          });
+        });
+      }
+      else {
+        res.json({ tokenValid: false });
+      }
     });
-  });
+  }
 });

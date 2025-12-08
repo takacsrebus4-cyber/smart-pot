@@ -22,8 +22,9 @@
         <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
         <li><a href="./my_plants.html"><i class="fas fa-leaf"></i> My Plants</a></li>
         <li><a href="./analytics.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a></li>
-        <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
+        <!--<li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>-->
         <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
+        <li id="delete_user"><a href="#"><i class="fas fa-x"></i> Delete Account</a></li>
       </ul>
     </aside>
 
@@ -59,6 +60,8 @@
 
   </div>
 
+
+  <!-- Logout Modal -->
   <div id="logout_modal" class="modal">
     <form class="modal-content" action="/action_page.php">
       <div class="container">
@@ -67,6 +70,20 @@
         <div class="clearfix">
           <button type="button" id="no_btn" class="no_btn">No</button>
           <button type="button" id="logout_btn" class="logout_btn">Log out</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Delete User -->
+  <div id="delete_user_modal" class="modal">
+    <form class="modal-content" action="/action_page.php">
+      <div class="container">
+        <h1>Delete Account</h1>
+        <p class="warning">Warning: This action is irreversible and will remove all your data.</p>
+        <div class="clearfix">
+          <button type="button" id="cancel_btn" class="no_btn">Cancel</button>
+          <button type="button" id="delete_btn" class="logout_btn">Delete</button>
         </div>
       </div>
     </form>
@@ -84,6 +101,7 @@
   <script src="./analytics.js"></script>
   <!-- <script src="./token_validation.js"></script> -->
   <script src="./logout.js"></script>
+  <script src="./delete_user.js"></script>
 </body>
 
 </html>
