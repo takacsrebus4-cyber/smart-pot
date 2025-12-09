@@ -24,8 +24,13 @@
                 <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
                 <li><a href="./my_plants.html" class="active"><i class="fas fa-leaf"></i> My Plants</a></li>
                 <li><a href="./analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
-                <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
+                <li><a href="#" id="dropdown"><i class="fas fa-user-circle"></i> Profile</a></li>
+                <div id="dropdown-container" class="dropdown-container">
+                    <li id="logged-in-user"></li>
+                    <button id="logout"> Log Out</button>
+                    <button id="delete_user"> Delete Account</button>
+                </div>
+                </li>
             </ul>
         </aside>
 
@@ -35,8 +40,10 @@
             <header class="header">
                 <h1>My Plants</h1>
                 <div>
-                <a href="./upload_current_plant.html" class="add-plant"><i class="fas fa-plus"></i> Add New Plant</a>
-                <a href="./delete_current_plant.html" class="delete-plant"><i class="fas fa-minus"></i> Delete Plant</a>
+                    <a href="./upload_current_plant.html" class="add-plant"><i class="fas fa-plus"></i> Add New
+                        Plant</a>
+                    <a href="./delete_current_plant.html" class="delete-plant"><i class="fas fa-minus"></i> Delete
+                        Plant</a>
                 </div>
             </header>
 
@@ -167,6 +174,7 @@
         </main>
     </div>
 
+    <!-- Logout Modal -->
     <div id="logout_modal" class="modal">
         <form class="modal-content" action="/action_page.php">
             <div class="container">
@@ -180,9 +188,25 @@
         </form>
     </div>
 
+    <!-- Delete User -->
+    <div id="delete_user_modal" class="modal">
+        <form class="modal-content" action="/action_page.php">
+            <div class="container">
+                <h1>Delete Account</h1>
+                <p class="warning">Warning: This action is irreversible and will remove all your data.</p>
+                <div class="clearfix">
+                    <button type="button" id="cancel_btn" class="no_btn">Cancel</button>
+                    <button type="button" id="delete_btn" class="logout_btn">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <script src="./dashboard.js"></script>
     <script src="./token_validation.js"></script>
     <script src="./logout.js"></script>
+    <script src="./delete_user.js"></script>
+    <script src="./profile.js"></script>
 </body>
 
 </html>

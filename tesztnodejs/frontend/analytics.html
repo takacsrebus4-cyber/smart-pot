@@ -22,9 +22,13 @@
         <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
         <li><a href="./my_plants.html"><i class="fas fa-leaf"></i> My Plants</a></li>
         <li><a href="./analytics.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a></li>
-        <!--<li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>-->
-        <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
-        <li id="delete_user"><a href="#"><i class="fas fa-x"></i> Delete Account</a></li>
+        <li><a href="#" id="dropdown"><i class="fas fa-user-circle"></i> Profile</a></li>
+        <div id="dropdown-container" class="dropdown-container">
+          <li id="logged-in-user"></li>
+          <button id="logout"> Log Out</button>
+          <button id="delete_user"> Delete Account</button>
+        </div>
+        </li>
       </ul>
     </aside>
 
@@ -32,12 +36,40 @@
       <!-- Header -->
       <header class="header">
         <h1>Analytics</h1>
-        <button id="loadbtn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Refresh Data</button>
-        <h3>Analyze your plants conditions over the past week</h3>
+        <h3>Analyze your plants' conditions over the past week</h3>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
       </header>
 
-      <!-- Analytics Content -->
+      <!--Plant selection-->
+      <form name="load-current-plants" id="load-current-plants" action="/action_page.php">
+          <h2>Load your plants and select which one to analyze!</h2>
+          <br>
+          <button type="button" id="load-current-plants-btn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Load
+            My Plants</button>
+        <select name="plantSelect" id="plantSelect" class="plantSelect">
+          <option value="" selected="selected">First load your plants</option>
+        </select>
+      </form>
+
+      <!-- Temperature Chart -->
+      <section class="analytics-section">
+        <h2>Temperature Levels</h2>
+        <!-- Chart Container -->
+        <div class="chart-container">
+          <canvas id="temperatureChart" class="fa-chart-line" style="width:100%"></canvas>
+        </div>
+      </section>
+
+      <!-- Humidity Chart -->
+      <section class="analytics-section">
+        <h2>Humidity Levels</h2>
+        <!-- Chart Container -->
+        <div class="chart-container">
+          <canvas id="humidityChart" class="fa-chart-line" style="width:100%"></canvas>
+        </div>
+      </section>
+
+      <!-- Soil Moisture Chart -->
       <section class="analytics-section">
         <h2>Soil Moisture Levels</h2>
         <!-- Chart Container -->
@@ -46,7 +78,7 @@
         </div>
       </section>
 
-      <!-- Analytics Content -->
+      <!-- Light Intensity Chart -->
       <section class="analytics-section">
         <h2>Light Intensity Levels</h2>
         <!-- Chart Container -->
@@ -54,6 +86,7 @@
           <canvas id="lightIntensityChart" class="fa-chart-line" style="width:100%"></canvas>
         </div>
       </section>
+
 
     </main>
 
@@ -89,19 +122,11 @@
     </form>
   </div>
 
-  <div id="userinfo" class="userinfo-modal">
-    <span onclick="document.getElementById('userinfo').style.display='block'" class="close" title="Close Modal">×</span>
-    <div class="user-info-content">
-      <h2>User Profile</h2>
-      <p>Name: John Doe</p>
-      <p>Email:abc@gmail.com</p>
-    </div>
-  </div>
-
   <script src="./analytics.js"></script>
-  <!-- <script src="./token_validation.js"></script> -->
+  <script src="./token_validation.js"></script>
   <script src="./logout.js"></script>
   <script src="./delete_user.js"></script>
+  <script src="./profile.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,5 @@
+//const host = "http://127.0.0.1:3000";
+
 // Simple script for interactive elements
 document.addEventListener('DOMContentLoaded', function () {
     // Water button functionality
@@ -23,7 +25,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-/*document.getElementById("user-avatar").addEventListener("click", function () {
-    document.getElementById("userinfo").style.display = 'block';
-});*/
 
+//Plant cards
+document.body.onload = function () {
+     fetch(`${host}/current_plant_list`, {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/json',
+             'authorization': 'Bearer ' + localStorage.getItem('accessToken')
+         },
+         body: JSON.stringify({
+             userid: localStorage.getItem('userid')
+         }),
+     }).then(res => res.json()).then(response => {
+         if (response.token_valid == false) {
+             alert("Session expired. Please log in again.");
+             window.location.href = "login.html";
+         }
+         else {
+             document.getElementById('total-plants').innerText = "" + response.length;
+
+         }
+    });
+}

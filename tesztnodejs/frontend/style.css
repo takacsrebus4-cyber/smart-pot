@@ -260,6 +260,7 @@
             padding: 1.5rem;
             box-shadow: var(--shadow);
             margin-top: 2rem;
+            display: none;
         }
 
         .section-title {
@@ -562,11 +563,6 @@
     background-color: var(--dark-red);
 }
 
-/* Load Button */
-.loadbtn {
-    display: none;
-}
-
 p.warning {
     margin-bottom: 10px;
     font-weight: bold;
@@ -609,4 +605,71 @@ p.warning {
 .no_delete_btn:hover {
     background-color: var(--primary-green);
     color: var(--light-green);
+}
+
+.dropdown-container {
+    display: none;
+    background-color: var(--secondary-green);
+    padding-left: 8px;
+    border-radius: var(--radius);
+    margin-top: 5px;
+}
+
+.dropdown-container button{
+    margin: 0;
+    padding: 10px 0;
+    border-radius: var(--radius);
+    width: 100%;
+    background-color: transparent;
+    color: var(--white);
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.dropdown-container button:hover {
+    color: var(--dark-green)
+}
+
+
+.plantSelect {
+    width: 50%;
+    padding: 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--light-text);
+    font-size: 16px;
+}
+
+.plantSelect:focus {
+    border-color: var(--primary-green);
+    box-shadow: var(--shadow);
+    outline: none;
+}
+
+.confirm_btn{
+  width: 30%;
+  height: 40px;
+  border-radius: 5px;
+  border-color: var(--primary-green);
+  font-size: 15px;
+  background-color: var(--primary-green);
+  color: var(--light-green);
+}
+
+.confirm_btn:hover{
+    background-color: var(--secondary-green);
+    color: var(--light-green);
+}
+
+/* Style for load button */
+.loadbtn {
+    background-color: var(--primary-green);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
 }

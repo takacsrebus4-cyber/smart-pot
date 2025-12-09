@@ -132,10 +132,10 @@ void loop() {
   Serial.println("Timer: " + String(timer));
 
   //send data to server after 1 minute or if the difference between current and previously measured data exceeds the marging of error
-  //if (timer >= 60000) {
+  if (timer >= 900000) {
     upload_data(light, mappedSoilMoisture, temperature, humidity);
     timer = 0;
-  //}
+  }
 
 
   prev_light = light;

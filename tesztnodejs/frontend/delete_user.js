@@ -90,7 +90,7 @@ document.getElementById("delete_btn").addEventListener("click", async (e) => {
                             }).then(res => res.json()).then(response => {
                                 console.log(response);
                                 if (response.success == true) {
-                                    alert("User deleted successfully.");
+                                    alert("User deleted successfully. Redirecting to login page...");
                                     plant_ids.length = 0;
                                     console.log(plant_ids);
                                     localStorage.clear();

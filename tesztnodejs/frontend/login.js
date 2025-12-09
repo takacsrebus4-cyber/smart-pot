@@ -1,7 +1,7 @@
 const host = 'http://127.0.0.1:3000'
 
 
-document.getElementById("loginForm").addEventListener("submit", (e) => {
+document.getElementById("button").addEventListener("click", (e) => {
     e.preventDefault();
     const data = {
         username: document.getElementById("username").value,

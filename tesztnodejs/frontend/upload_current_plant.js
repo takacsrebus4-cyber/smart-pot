@@ -1,7 +1,7 @@
 document.getElementById("loadbtn").addEventListener("click", function (e) {
     e.preventDefault();
     fetch('http://localhost:3000/query/plant_data', {
-        method: 'GET',
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'authorization': 'Bearer ' + localStorage.getItem('accessToken'),

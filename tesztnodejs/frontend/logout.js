@@ -21,6 +21,7 @@ document.getElementById("logout_btn").addEventListener("click", function (evt) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'authorization': 'Bearer ' + localStorage.getItem('accessToken'),
         },
         body: JSON.stringify(logoutBody),
     }).then(res => res.json()).then(response => {

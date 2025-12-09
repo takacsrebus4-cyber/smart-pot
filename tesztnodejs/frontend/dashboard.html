@@ -22,10 +22,15 @@
             </div>
             <ul class="nav-links">
                 <li><a href="./dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="./my_plants.html"><i class="fas fa-leaf"></i> My Plants</a></li>
+                <li><a href='./my_plants.html'><i class="fas fa-leaf"></i> My Plants</a></li>
                 <li><a href="./analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                <li><a href="#"><i class="fas fa-bell"></i> Alerts</a></li>
-                <li id="logout"><a href="#"><i class="fas fa-user-circle"></i> Log Out</a></li>
+                <li><a href="#" id="dropdown"><i class="fas fa-user-circle"></i> Profile</a></li>
+                <div id="dropdown-container" class="dropdown-container">
+                    <li id="logged-in-user"></li>
+                    <button id="logout"> Log Out</button>
+                    <button id="delete_user"> Delete Account</button>
+                </div>
+                </li>
             </ul>
         </aside>
 
@@ -40,22 +45,22 @@
             <section class="stats-overview">
                 <div class="stat-card">
                     <i class="fas fa-leaf fa-2x" style="color: var(--primary-green);"></i>
-                    <div class="stat-value">12</div>
+                    <div class="stat-value" id="total-plants">5</div>
                     <div class="stat-label">Total Plants</div>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-tint fa-2x" style="color: var(--primary-green);"></i>
-                    <div class="stat-value">8</div>
+                    <div class="stat-value">2</div>
                     <div class="stat-label">Need Watering</div>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-temperature-high fa-2x" style="color: var(--primary-green);"></i>
-                    <div class="stat-value">3</div>
+                    <div class="stat-value">1</div>
                     <div class="stat-label">Temperature Alerts</div>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-heart fa-2x" style="color: var(--primary-green);"></i>
-                    <div class="stat-value">9</div>
+                    <div class="stat-value">2</div>
                     <div class="stat-label">Healthy Plants</div>
                 </div>
             </section>
@@ -185,30 +190,10 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Analytics Section -->
-            <section class="analytics-section">
-                <h2 class="section-title">Plant Health Analytics</h2>
-                <div class="chart-container">
-                    <p><i class="fas fa-chart-bar fa-3x mb-2"></i></p>
-                    <p>Plant Health Metrics Visualization</p>
-                </div>
-            </section>
         </main>
     </div>
 
-    <!--
-    <div id="userinfo" class="userinfo-modal">
-        <span onclick="document.getElementById('userinfo').style.display='none'" class="close"
-            title="Close Modal">×</span>
-        <div class="user-info-content">
-            <h2>User Profile</h2>
-            <p>Name: John Doe</p>
-            <p>Email:abc@gmail.com</p>
-        </div>
-    </div>
-    -->
-
+    <!-- Logout Modal -->
     <div id="logout_modal" class="modal">
         <form class="modal-content" action="/action_page.php">
             <div class="container">
@@ -223,9 +208,25 @@
         </form>
     </div>
 
+    <!-- Delete User -->
+    <div id="delete_user_modal" class="modal">
+        <form class="modal-content" action="/action_page.php">
+            <div class="container">
+                <h1>Delete Account</h1>
+                <p class="warning">Warning: This action is irreversible and will remove all your data.</p>
+                <div class="clearfix">
+                    <button type="button" id="cancel_btn" class="no_btn">Cancel</button>
+                    <button type="button" id="delete_btn" class="logout_btn">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <script src="./dashboard.js"></script>
     <script src="./token_validation.js"></script>
     <script src="./logout.js"></script>
+    <script src="./delete_user.js"></script>
+    <script src="./profile.js"></script>
 </body>
 
 </html>
