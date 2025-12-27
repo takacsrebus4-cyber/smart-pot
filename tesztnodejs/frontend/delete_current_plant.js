@@ -26,7 +26,7 @@ document.getElementById("loadbtn").addEventListener("click", async (e) => {
 
         // Handle token expiration
         if (response.tokenValid == false) {
-            alert("You are not authorized to perform this action. Please log in.");
+            alert("Jelentkezzen be.");
             localStorage.clear();
             window.location.href = "./login.html";
         }
@@ -69,7 +69,7 @@ document.getElementById("delete").addEventListener("click", async (e) => {
 
         // Handle token expiration
         if (response.tokenValid == false) {
-            alert("You are not authorized to perform this action. Please log in.");
+            alert("Jelentkezzen be.");
             localStorage.clear();
             window.location.href = "./login.html";
         }
@@ -89,21 +89,21 @@ document.getElementById("delete").addEventListener("click", async (e) => {
 
                 // Handle token expiration
                 if (response.tokenValid == false) {
-                    alert("You are not authorized to perform this action. Please log in.");
+                    alert("Jelentkezzen be.");
                     localStorage.clear();
                     window.location.href = "./login.html";
                 }
                 else if (response.success == true) {
-                    alert("Plant deleted successfully.");
+                    alert("Növény sikeresen törölve.");
                 }
                 else {
-                    alert("Error deleting plant.");
+                    alert("Probléma a növény törlésekor.");
                 }
             });
         }
         else
         {
-            alert("Error deleting data.")
+            alert("Probléma az adat törlésekor.")
         }
     });
 });

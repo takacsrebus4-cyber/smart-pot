@@ -11,6 +11,9 @@ const cors = require('cors');
 const { table, Console } = require("console");
 const e = require("express");
 const jwt = require("jsonwebtoken");
+const fastcsv = require("fast-csv");
+const fs = require("fs");
+const ws = fs.createWriteStream("weekly_data_export.csv");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({
@@ -26,7 +29,7 @@ const db = mysql.createPool({
   port: process.env.DB_PORT
 })
 
-app.listen(port, () => {
+app.listen(port,'0.0.0.0', () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
 
@@ -45,11 +48,11 @@ app.post("/login", async (req, res) => {
         res.json({ userNotFound: true });
       }
       else {
-        const hashedPassword = result[0].password;
+        var hashedPassword = result[0].password;
         if (await bcrypt.compare(password, hashedPassword)) {
 
-          const token = generateAccessToken({ user: username });
-          const refreshToken = generateRefreshToken({ user: username });
+          var token = generateAccessToken({ user: username });
+          var refreshToken = generateRefreshToken({ user: username });
           refreshTokens.push(refreshToken);
 
           res.json({ accessToken: token, refreshToken: refreshToken, userid: result[0].id });
@@ -180,7 +183,7 @@ app.get("/query/current_plants", async (req, res) => {
 
 //query latest data from weekly_data table
 //authorized for normal users
-app.get("/query/latest_data", async (req, res) => {
+app.post("/query/latest_data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
 
   //token validation check
@@ -188,7 +191,8 @@ app.get("/query/latest_data", async (req, res) => {
     db.getConnection(async (err, connection) => {
       if (err) throw (err)
       var table = "weekly_data"
-      connection.query(`SELECT * FROM ${table} ORDER BY timestamp DESC LIMIT 1;`, async (err, result) => {
+      var plant_id = req.body.plant_id;
+      connection.query(`SELECT * FROM ${table} WHERE current_plant_id=${plant_id} ORDER BY timestamp DESC LIMIT 1;`, async (err, result) => {
         res.json(result);
         connection.release();
       });
@@ -224,7 +228,7 @@ app.get("/query/weekly_data", async (req, res) => {
 
 //query daily averages from weekly_data table
 //authorized for normal users
-app.post("/query/daily_average", async (req, res) => {
+app.post("/query/daily_summary", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
 
   //token validation check
@@ -234,13 +238,15 @@ app.post("/query/daily_average", async (req, res) => {
       var table = "weekly_data";
       var plant_id = req.body.plant_id;
       connection.query(`SELECT DATE_FORMAT(timestamp, "%Y/%m/%d") as date, 
-          AVG(light) as avg_light, 
-          AVG(moisture) as avg_moisture,
+          AVG(light_intensity) as avg_light_intensity, 
+          AVG(soil_moisture) as avg_soil_moisture,
           AVG(temperature) as avg_temperature,
-          AVG(humidity) as avg_humidity
+          AVG(humidity) as avg_humidity,
+          SUM(light_amount) as total_light_amount
           FROM ${table}
           WHERE current_plant_id=${plant_id}
           GROUP BY DATE(timestamp);`, async (err, result) => {
+        console.log(result);
         res.json(result);
         connection.release();
       });
@@ -250,6 +256,35 @@ app.post("/query/daily_average", async (req, res) => {
     res.json({ tokenValid: false });
   }
 });
+
+//export data from weekly_data table
+//authorized for normal users
+app.post("/export/weekly_data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+
+  //token validation check
+  if (validateToken(req.headers['authorization'])) {
+    db.getConnection(async (err, connection) => {
+      if (err) throw (err)
+      var table = "weekly_data"
+      var plant_id = req.body.plant_id;
+      connection.query(`SELECT * FROM ${table} WHERE current_plant_id=${plant_id};`, async (err, result) => {
+        connection.release();
+        var jsonData = JSON.parse(JSON.stringify(result));
+
+        fastcsv.write(jsonData, { headers: true })
+          .on("finish", function () {
+            console.log("Write to CSV successfully!");
+          })
+          .pipe(ws);
+      });
+    });
+  }
+  else {
+    res.json({ tokenValid: false });
+  }
+});
+
 
 
 
@@ -271,19 +306,22 @@ app.post("/upload/plant", async (req, res) => {
       var table = "plants_data"
       var name = req.body.name;
       var scientific_name = req.body.scientific_name;
-      var min_light = req.body.min_light;
-      var max_light = req.body.max_light;
-      var min_moisture = req.body.min_moisture;
-      var max_moisture = req.body.max_moisture;
+      var min_light_amount = req.body.min_light_amount;
+      var max_light_amount = req.body.max_light_amount;
+      var min_light_intensity = req.body.min_light_intensity;
+      var max_light_intensity = req.body.max_light_intensity;
+      var min_soil_moisture = req.body.min_soil_moisture;
+      var max_soil_moisture = req.body.max_soil_moisture;
       var min_temperature = req.body.min_temperature;
       var max_temperature = req.body.max_temperature;
       var min_humidity = req.body.min_humidity;
       var max_humidity = req.body.max_humidity;
       connection.query(`INSERT INTO ${table}
-        (name, scientific_name, min_light, max_light, min_moisture, max_moisture, min_temperature, max_temperature, min_humidity, max_humidity)
+        (name, scientific_name, min_light_amount, max_light_amount, min_light_intensity, max_light_intensity, 
+        min_soil_moisture, maxsoil__moisture, min_temperature, max_temperature, min_humidity, max_humidity)
         VALUES(
-          "${name}", "${scientific_name}", ${min_light}, ${max_light}, ${min_moisture}, ${max_moisture},
-          ${min_temperature}, ${max_temperature}, ${min_humidity}, ${max_humidity}
+          "${name}", "${scientific_name}", ${min_light_amount}, ${max_light_amount}, ${min_light_intensity}, ${max_light_intensity}, 
+          ${min_soil_moisture}, ${max_soil_moisture}, ${min_temperature}, ${max_temperature}, ${min_humidity}, ${max_humidity}
         )`, async (err, result) => {
         console.log(result);
         if (result != undefined && result.affectedRows > 0) {
@@ -382,11 +420,12 @@ app.post("/upload/data", async (req, res) => {
     var table = "weekly_data";
     var date = new Date();
     var timestamp = date.toISOString().split('T')[0] + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    var light = req.body.light;
-    var moisture = req.body.moisture;
+    var light_amount = req.body.light_amount;
+    var light_intensity = req.body.light_intensity;
+    var soil_moisture = req.body.soil_moisture;
     var temperature = req.body.temperature;
     var humidity = req.body.humidity;
-    var current_plant_id = 3;
+    var current_plant_id = 2; //hardcoded for testing purposes
 
     connection.query(`DELETE FROM ${table} WHERE timestamp < NOW() - INTERVAL 7 DAY;`, async (err, result) => {
       connection.release();
@@ -396,9 +435,9 @@ app.post("/upload/data", async (req, res) => {
     });
 
     connection.query(`INSERT INTO ${table}
-        (timestamp, light, moisture, temperature, humidity, current_plant_id)
+        (timestamp, light_amount, light_intensity, soil_moisture, temperature, humidity, current_plant_id)
         VALUES(
-          "${timestamp}", ${light}, ${moisture}, ${temperature}, ${humidity}, ${current_plant_id}
+          "${timestamp}", ${light_amount}, ${light_intensity}, ${soil_moisture}, ${temperature}, ${humidity}, ${current_plant_id}
         )`, async (err, result) => {
       connection.release();
       console.log("Result: ");
@@ -564,7 +603,7 @@ function validateToken(header) {
 
   //authorization header check
   if (!header) {
-    res.json({ tokenValid: false });
+    return false;
   }
   else {
     token = header.split(' ')[1];

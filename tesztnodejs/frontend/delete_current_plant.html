@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Pot - CG8WXK</title>
+    <title>Növény törlés | Plan Monitor Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="login_style.css">
 
 </head>
@@ -12,17 +13,17 @@
 <body id="dashboard" class="dashboard-container">
     <div class="login-container">
         <div class="logo">
-            <h1>Delete a plant!</h1>
-            <p class="warning">Warning: If you delete a plant all the data belonging to the plant will be permanently deleted as well!</p>
+            <h1>Növény törlése!</h1>
+            <p class="warning">Figyelem: Ha kitöröl egy növényt, minden az adott növényhez tartozó adat elveszik!</p>
         </div>
         <form name="delete-plant" id="delete-plant" action="/action_page.php">
-            <button type="button" id="loadbtn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Load My Plants</button>
+            <button type="button" id="loadbtn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Növények betöltése</button>
             <select name="plantSelect" id="plantSelect" class="plantSelect">
-                <option value="" selected="selected">Select plant to delete</option>
+                <option value="" selected="selected">Növényválasztás</option>
             </select>
             <br><br>
-            <button type="button" id="cancel" class="cancel_btn">Cancel</button>
-            <input type="submit" id="delete" class="confirm_btn" value="Delete">
+            <button type="button" id="cancel" class="cancel_btn">Mégse</button>
+            <input type="submit" id="delete" class="confirm_btn" value="Törlés">
         </form>
     </div>
 

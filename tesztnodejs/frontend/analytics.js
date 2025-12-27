@@ -34,7 +34,7 @@ document.getElementById("load-current-plants-btn").addEventListener("click", fun
             });
             displayAnalyticsSection();
         } else {
-            alert("No plants found.");
+            document.getElementsByClassName("no-data")[0].innerText ="Nem található növény.";
         }
     });
 });
@@ -55,6 +55,7 @@ function displayAnalyticsSection() {
     var dates = [];
 
     var soilMoistureLevels = [];
+    var lightAmount = [];
     var lightIntensityLevels = [];
     var temperatureLevels = [];
     var humidityLevels = [];
@@ -71,6 +72,9 @@ function displayAnalyticsSection() {
     var minLightIntensity = [0, 0, 0, 0, 0, 0, 0];
     var maxLightIntensity = 0;
 
+    var minLightAmount = [0, 0, 0, 0, 0, 0, 0];
+    var maxLightAmount = 0;
+
     fetch("http://127.0.0.1:3000/query/plant_data", {
         method: 'POST',
         headers: {
@@ -83,7 +87,7 @@ function displayAnalyticsSection() {
     }).then(res => res.json()).then(response => {
         console.log(response);
         if (response.tokenValid == false) {
-            alert("Session expired. Please log in again.");
+            alert("Jelentkezzen be.");
             localStorage.clear();
             window.location.href = "./login.html";
         }
@@ -94,11 +98,14 @@ function displayAnalyticsSection() {
             analyticsSection[i].style.display = "block";
         }
 
-        minSoilMoisture.fill(response[0].min_moisture, 0, 7);
-        maxSoilMoisture = response[0].max_moisture;
+        minSoilMoisture.fill(response[0].min_soil_moisture, 0, 7);
+        maxSoilMoisture = response[0].max_soil_moisture;
 
-        minLightIntensity.fill(response[0].min_light, 0, 7);
-        maxLightIntensity = response[0].max_light;
+        minLightAmount.fill(response[0].min_light_amount, 0, 7);
+        maxLightAmount = response[0].max_light_amount;
+
+        minLightIntensity.fill(response[0].min_light_intensity, 0, 7);
+        maxLightIntensity = response[0].max_light_intensity;
 
         minTemperature.fill(response[0].min_temperature, 0, 7);
         maxTemperature = response[0].max_temperature;
@@ -106,7 +113,7 @@ function displayAnalyticsSection() {
         minHumidity.fill(response[0].min_humidity, 0, 7);
         maxHumidity = response[0].max_humidity;
 
-        fetch("http://127.0.0.1:3000/query/daily_average", {
+        fetch("http://127.0.0.1:3000/query/daily_summary", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -119,233 +126,294 @@ function displayAnalyticsSection() {
             console.log(response);
 
             if (response.tokenValid == false) {
-                alert("Session expired. Please log in again.");
+                alert("Jelentkezzen be.");
                 localStorage.clear();
                 window.location.href = "./login.html";
             }
             else if (response.length == 0) {
-                alert("No data found for the selected plant.");
-            }
+                document.getElementsByClassName("no-data")[0].innerText = "Nincs elérhető adat a kiválasztott növényhez.";
+                var analyticsSection = document.getElementsByClassName("analytics-section");
 
-            for (let i = 0; i < response.length; i++) {
-                dates.push(response[i].date);
-                soilMoistureLevels.push(parseFloat(response[i].avg_moisture));
-                lightIntensityLevels.push(parseFloat(response[i].avg_light));
-                temperatureLevels.push(parseFloat(response[i].avg_temperature));
-                humidityLevels.push(parseFloat(response[i].avg_humidity));
+                for (let i = 0; i < analyticsSection.length; i++) {
+                    analyticsSection[i].style.display = "none";
+                }
             }
+            else {
 
-            var chartStatus = Chart.getChart("soilMoistureChart");
-            if (chartStatus != undefined) {
-                chartStatus.destroy();
-            }
+                for (let i = 0; i < response.length; i++) {
+                    dates.push(response[i].date);
+                    soilMoistureLevels.push(parseFloat(response[i].avg_soil_moisture));
+                    lightAmount.push(parseFloat(response[i].total_light_amount));
+                    lightIntensityLevels.push(parseFloat(response[i].avg_light_intensity));
+                    temperatureLevels.push(parseFloat(response[i].avg_temperature));
+                    humidityLevels.push(parseFloat(response[i].avg_humidity));
+                }
 
-            //Soil Moisture Level Chart
-            var soil_moisture_chart = document.getElementById('soilMoistureChart');
-            new Chart(soil_moisture_chart, {
-                type: "line",
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        label: "Average Soil Moisture Level",
-                        fill: false,
-                        lineTension: 0,
-                        backgroundColor: "rgba(0,0,255,1.0)",
-                        borderColor: "rgba(0,0,255,1.0)",
-                        borderWidth: 4,
-                        data: soilMoistureLevels,
-                    }, {
-                        label: "Ideal Soil Moisture Level",
-                        data: minSoilMoisture,
-                        fill: { value: maxSoilMoisture },
-                        lineTension: 0,
-                        backgroundColor: "rgba(54, 232, 27, 0.4)",
-                        borderColor: "rgba(255, 0, 0,1.0)",
-                        borderWidth: 0,
-                        pointRadius: 0,
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: { display: true },
-                        title: {
-                            display: true,
-                            text: "Average Soil Moisture Level of the Plant Over the Week",
-                            font: { size: 16 },
-                            maintainAspectRatio: false
-                        },
+                var chartStatus = Chart.getChart("soilMoistureChart");
+                if (chartStatus != undefined) {
+                    chartStatus.destroy();
+                }
+
+                //Soil Moisture Level Chart
+                var soil_moisture_chart = document.getElementById('soilMoistureChart');
+                new Chart(soil_moisture_chart, {
+                    type: "line",
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: "Átlagos talajnedvesség",
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,1.0)",
+                            borderWidth: 4,
+                            data: soilMoistureLevels,
+                        }, {
+                            label: "Ideális talajnedvesség",
+                            data: minSoilMoisture,
+                            fill: { value: maxSoilMoisture },
+                            lineTension: 0,
+                            backgroundColor: "rgba(54, 232, 27, 0.4)",
+                            borderColor: "rgba(255, 0, 0,1.0)",
+                            borderWidth: 0,
+                            pointRadius: 0,
+                        }]
                     },
-                    scales: {
-                        x: {
-                            title: { display: true, text: "Date" },
+                    options: {
+                        plugins: {
+                            legend: { display: true },
+                            title: {
+                                display: true,
+                                text: "Átlagos talajnedvesség a hét folyamán",
+                                font: { size: 16 },
+                                maintainAspectRatio: false
+                            },
                         },
-                        y: {
-                            title: { display: true, text: "Soil Moisture Level" },
-                            min: 0,
-                            max: 1024,
+                        scales: {
+                            x: {
+                                title: { display: true, text: "Dátum" },
+                            },
+                            y: {
+                                title: { display: true, text: "Talajnedvesség szintje" },
+                                min: 0,
+                                max: 1024,
+                            }
                         }
                     }
+                });
+
+
+                //Light Intensity Level Chart
+                chartStatus = Chart.getChart("lightIntensityChart");
+                if (chartStatus != undefined) {
+                    chartStatus.destroy();
                 }
-            });
-
-
-            //Light Intensity Level Chart
-            chartStatus = Chart.getChart("lightIntensityChart");
-            if (chartStatus != undefined) {
-                chartStatus.destroy();
-            }
-            var light_intensity_chart = document.getElementById('lightIntensityChart');
-            new Chart(light_intensity_chart, {
-                type: "line",
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        label: "Average Light Intensity",
-                        fill: false,
-                        lineTension: 0,
-                        backgroundColor: "rgba(0,0,255,1.0)",
-                        borderColor: "rgba(0,0,255,1.0)",
-                        borderWidth: 4,
-                        data: lightIntensityLevels,
-                    }, {
-                        label: "Ideal Light Intensity",
-                        data: minLightIntensity,
-                        fill: { value: maxLightIntensity },
-                        lineTension: 0,
-                        backgroundColor: "rgba(54, 232, 27, 0.4)",
-                        borderColor: "rgba(255, 0, 0,1.0)",
-                        borderWidth: 0,
-                        pointRadius: 0,
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: { display: true },
-                        title: {
-                            display: true,
-                            text: `Average Intensity of Light the Plant Received Over the Week`,
-                            font: { size: 16 },
-                            maintainAspectRatio: false
-                        },
+                var light_intensity_chart = document.getElementById('lightIntensityChart');
+                new Chart(light_intensity_chart, {
+                    type: "line",
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: "Átlagos fényintenzitás",
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,1.0)",
+                            borderWidth: 4,
+                            data: lightIntensityLevels,
+                        }, {
+                            label: "Ideális fényintenzitás",
+                            data: minLightIntensity,
+                            fill: { value: maxLightIntensity },
+                            lineTension: 0,
+                            backgroundColor: "rgba(54, 232, 27, 0.4)",
+                            borderColor: "rgba(255, 0, 0,1.0)",
+                            borderWidth: 0,
+                            pointRadius: 0,
+                        }]
                     },
-                    scales: {
-                        x: {
-                            title: { display: true, text: "Date" },
+                    options: {
+                        plugins: {
+                            legend: { display: true },
+                            title: {
+                                display: true,
+                                text: `Átlagos fényintenzitás a hét folyamán`,
+                                font: { size: 16 },
+                                maintainAspectRatio: false
+                            },
                         },
-                        y: {
-                            title: { display: true, text: "Light Intensity (lx)" },
-                            min: 0,
-                            max: 22000,
+                        scales: {
+                            x: {
+                                title: { display: true, text: "Dátum" },
+                            },
+                            y: {
+                                title: { display: true, text: "Fényintezitás (lx)" },
+                                min: 0,
+                                max: 22000,
+                            }
                         }
                     }
+                });
+
+                var chartStatus = Chart.getChart("temperatureChart");
+                if (chartStatus != undefined) {
+                    chartStatus.destroy();
                 }
-            });
 
-            var chartStatus = Chart.getChart("temperatureChart");
-            if (chartStatus != undefined) {
-                chartStatus.destroy();
-            }
-
-            //Temperature Level Chart
-            var temperature_chart = document.getElementById('temperatureChart');
-            new Chart(temperature_chart, {
-                type: "line",
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        label: "Average Temperature",
-                        fill: false,
-                        lineTension: 0,
-                        backgroundColor: "rgba(0,0,255,1.0)",
-                        borderColor: "rgba(0,0,255,1.0)",
-                        borderWidth: 4,
-                        data: temperatureLevels,
-                    }, {
-                        label: "Ideal Temperature",
-                        data: minTemperature,
-                        fill: { value: maxTemperature },
-                        lineTension: 0,
-                        backgroundColor: "rgba(54, 232, 27, 0.4)",
-                        borderColor: "rgba(255, 0, 0,1.0)",
-                        borderWidth: 0,
-                        pointRadius: 0,
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: { display: true },
-                        title: {
-                            display: true,
-                            text: "Average Temperature Around the Plant Over the Week",
-                            font: { size: 16 },
-                            maintainAspectRatio: false
-                        },
+                //Temperature Level Chart
+                var temperature_chart = document.getElementById('temperatureChart');
+                new Chart(temperature_chart, {
+                    type: "line",
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: "Átlagos hőmérséklet",
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,1.0)",
+                            borderWidth: 4,
+                            data: temperatureLevels,
+                        }, {
+                            label: "Ideális hőmérséklet",
+                            data: minTemperature,
+                            fill: { value: maxTemperature },
+                            lineTension: 0,
+                            backgroundColor: "rgba(54, 232, 27, 0.4)",
+                            borderColor: "rgba(255, 0, 0,1.0)",
+                            borderWidth: 0,
+                            pointRadius: 0,
+                        }]
                     },
-                    scales: {
-                        x: {
-                            title: { display: true, text: "Date" },
+                    options: {
+                        plugins: {
+                            legend: { display: true },
+                            title: {
+                                display: true,
+                                text: "Átlagos hőmérséklet a hét folyamán",
+                                font: { size: 16 },
+                                maintainAspectRatio: false
+                            },
                         },
-                        y: {
-                            title: { display: true, text: "Temperature (°C)" },
-                            min: 0,
-                            max: 45,
+                        scales: {
+                            x: {
+                                title: { display: true, text: "Dátum" },
+                            },
+                            y: {
+                                title: { display: true, text: "Hőmérséklet (°C)" },
+                                min: 0,
+                                max: 35,
+                            }
                         }
                     }
+                });
+
+                var chartStatus = Chart.getChart("humidityChart");
+                if (chartStatus != undefined) {
+                    chartStatus.destroy();
                 }
-            });
 
-            var chartStatus = Chart.getChart("humidityChart");
-            if (chartStatus != undefined) {
-                chartStatus.destroy();
-            }
-
-            //Humidity Level Chart
-            var humidity_chart = document.getElementById('humidityChart');
-            new Chart(humidity_chart, {
-                type: "line",
-                data: {
-                    labels: dates,
-                    datasets: [{
-                        label: "Average Humidity",
-                        fill: false,
-                        lineTension: 0,
-                        backgroundColor: "rgba(0,0,255,1.0)",
-                        borderColor: "rgba(0,0,255,1.0)",
-                        borderWidth: 4,
-                        data: humidityLevels,
-                    }, {
-                        label: "Ideal Humidity",
-                        data: minHumidity,
-                        fill: { value: maxHumidity },
-                        lineTension: 0,
-                        backgroundColor: "rgba(54, 232, 27, 0.4)",
-                        borderColor: "rgba(255, 0, 0,1.0)",
-                        borderWidth: 0,
-                        pointRadius: 0,
-                    }]
-                },
-                options: {
-                    plugins: {
-                        legend: { display: true },
-                        title: {
-                            display: true,
-                            text: "Average Humidity Around the Plant Over the Week",
-                            font: { size: 16 },
-                            maintainAspectRatio: false
-                        },
+                //Humidity Level Chart
+                var humidity_chart = document.getElementById('humidityChart');
+                new Chart(humidity_chart, {
+                    type: "line",
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: "Átlagos páratartalom",
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,1.0)",
+                            borderWidth: 4,
+                            data: humidityLevels,
+                        }, {
+                            label: "Ideális páratartalom",
+                            data: minHumidity,
+                            fill: { value: maxHumidity },
+                            lineTension: 0,
+                            backgroundColor: "rgba(54, 232, 27, 0.4)",
+                            borderColor: "rgba(255, 0, 0,1.0)",
+                            borderWidth: 0,
+                            pointRadius: 0,
+                        }]
                     },
-                    scales: {
-                        x: {
-                            title: { display: true, text: "Date" },
+                    options: {
+                        plugins: {
+                            legend: { display: true },
+                            title: {
+                                display: true,
+                                text: "Átlagos páratartalom a hét folyamán",
+                                font: { size: 16 },
+                                maintainAspectRatio: false
+                            },
                         },
-                        y: {
-                            title: { display: true, text: "Humidity (%)" },
-                            min: 0,
-                            max: 100,
+                        scales: {
+                            x: {
+                                title: { display: true, text: "Dátum" },
+                            },
+                            y: {
+                                title: { display: true, text: "Páratartalom (%)" },
+                                min: 0,
+                                max: 100,
+                            }
                         }
                     }
+                });
+
+                var chartStatus = Chart.getChart("lightAmountChart");
+                if (chartStatus != undefined) {
+                    chartStatus.destroy();
                 }
-            });
+
+                //Light Amount Chart
+                var lightAmount_chart = document.getElementById('lightAmountChart');
+                new Chart(lightAmount_chart, {
+                    type: "line",
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: "Fény mennyisége",
+                            fill: false,
+                            lineTension: 0,
+                            backgroundColor: "rgba(0,0,255,1.0)",
+                            borderColor: "rgba(0,0,255,1.0)",
+                            borderWidth: 4,
+                            data: lightAmount,
+                        }, {
+                            label: "Ideális fénymennyiség",
+                            data: minLightAmount,
+                            fill: { value: maxLightAmount },
+                            lineTension: 0,
+                            backgroundColor: "rgba(54, 232, 27, 0.4)",
+                            borderColor: "rgba(255, 0, 0,1.0)",
+                            borderWidth: 0,
+                            pointRadius: 0,
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: { display: true },
+                            title: {
+                                display: true,
+                                text: "A növényt ért fény mennyisége a hét folyamán",
+                                font: { size: 16 },
+                                maintainAspectRatio: false
+                            },
+                        },
+                        scales: {
+                            x: {
+                                title: { display: true, text: "Dátum" },
+                            },
+                            y: {
+                                title: { display: true, text: "Fény mennyisége (h)" },
+                                min: 0,
+                                max: 16,
+                            }
+                        }
+                    }
+                });
+            }
         });
     });
 }

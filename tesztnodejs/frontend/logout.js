@@ -26,7 +26,7 @@ document.getElementById("logout_btn").addEventListener("click", function (evt) {
         body: JSON.stringify(logoutBody),
     }).then(res => res.json()).then(response => {
         if (response.logout != true) {
-            alert("Logout failed, please try again.");
+            alert("Kijelentkezés sikertelen. Próbálja újra.");
         }
         else {
             localStorage.clear();

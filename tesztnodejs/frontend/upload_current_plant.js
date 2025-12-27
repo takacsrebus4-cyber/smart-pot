@@ -49,14 +49,14 @@ document.getElementById("upload").addEventListener("click", async (e) => {
     }).then(res => res.json()).then(response => {
         console.log(response);
         if (response.success == true) {
-            alert("Current plant uploaded successfully!");
+            alert("Növény sikeresen hozzáadva az adatbázishoz!");
         }
         else if (response.tokenValid == false) {
-            alert("You are not authorized to perform this action. Please log in.");
+            alert("Kérem jelentkezzen be.");
             window.location.href = "./login.html";
         }
         else {
-            alert("Error uploading current plant.");
+            alert("Probléma a feltöltéskor.");
         }
     });
 });

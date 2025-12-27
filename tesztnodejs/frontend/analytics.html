@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PlantMonitor Pro | Smart Plant Monitoring</title>
+  <title>Statisztika | PlantMonitor Pro</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -19,14 +19,14 @@
         <span>PlantMonitor Pro</span>
       </div>
       <ul class="nav-links">
-        <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li><a href="./my_plants.html"><i class="fas fa-leaf"></i> My Plants</a></li>
-        <li><a href="./analytics.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a></li>
-        <li><a href="#" id="dropdown"><i class="fas fa-user-circle"></i> Profile</a></li>
+        <!--  <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>  -->
+        <li><a href="./my_plants.html"><i class="fas fa-leaf"></i> Növényeim</a></li>
+        <li><a href="./analytics.html" class="active"><i class="fas fa-chart-line"></i> Statisztika</a></li>
+        <li><a href="#" id="dropdown"><i class="fas fa-user-circle"></i> Profil</a></li>
         <div id="dropdown-container" class="dropdown-container">
           <li id="logged-in-user"></li>
-          <button id="logout"> Log Out</button>
-          <button id="delete_user"> Delete Account</button>
+          <button id="logout"> Kijelentkezés</button>
+          <button id="delete_user"> Fiók törlése</button>
         </div>
         </li>
       </ul>
@@ -35,25 +35,26 @@
     <main class="main-content">
       <!-- Header -->
       <header class="header">
-        <h1>Analytics</h1>
-        <h3>Analyze your plants' conditions over the past week</h3>
+        <h1>Statisztika</h1>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
       </header>
 
       <!--Plant selection-->
       <form name="load-current-plants" id="load-current-plants" action="/action_page.php">
-          <h2>Load your plants and select which one to analyze!</h2>
+        <h2>Itt láthatja hogyan változott növénye állapota az elmúlt hét során.</h2>
+          <h3>Válassza ki melyik növényre kíváncsi!</h3>
           <br>
-          <button type="button" id="load-current-plants-btn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Load
-            My Plants</button>
+          <button type="button" id="load-current-plants-btn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Növények betöltése</button>
         <select name="plantSelect" id="plantSelect" class="plantSelect">
-          <option value="" selected="selected">First load your plants</option>
+          <option value="" selected="selected">Először töltse be a növényyeit</option>
         </select>
       </form>
 
+      <p class="no-data"></p>
+
       <!-- Temperature Chart -->
       <section class="analytics-section">
-        <h2>Temperature Levels</h2>
+        <h2>Hőmérséklet</h2>
         <!-- Chart Container -->
         <div class="chart-container">
           <canvas id="temperatureChart" class="fa-chart-line" style="width:100%"></canvas>
@@ -62,7 +63,7 @@
 
       <!-- Humidity Chart -->
       <section class="analytics-section">
-        <h2>Humidity Levels</h2>
+        <h2>Páratartalom</h2>
         <!-- Chart Container -->
         <div class="chart-container">
           <canvas id="humidityChart" class="fa-chart-line" style="width:100%"></canvas>
@@ -71,7 +72,7 @@
 
       <!-- Soil Moisture Chart -->
       <section class="analytics-section">
-        <h2>Soil Moisture Levels</h2>
+        <h2>Talaj nedvességtartalma</h2>
         <!-- Chart Container -->
         <div class="chart-container">
           <canvas id="soilMoistureChart" class="fa-chart-line" style="width:100%"></canvas>
@@ -80,10 +81,19 @@
 
       <!-- Light Intensity Chart -->
       <section class="analytics-section">
-        <h2>Light Intensity Levels</h2>
+        <h2>Fény intenzitása</h2>
         <!-- Chart Container -->
         <div class="chart-container">
           <canvas id="lightIntensityChart" class="fa-chart-line" style="width:100%"></canvas>
+        </div>
+      </section>
+
+      <!-- Light Amount Chart -->
+      <section class="analytics-section">
+        <h2>Fény mennyisége</h2>
+        <!-- Chart Container -->
+        <div class="chart-container">
+          <canvas id="lightAmountChart" class="fa-chart-line" style="width:100%"></canvas>
         </div>
       </section>
 
@@ -95,32 +105,32 @@
 
 
   <!-- Logout Modal -->
-  <div id="logout_modal" class="modal">
-    <form class="modal-content" action="/action_page.php">
-      <div class="container">
-        <h1>Log out</h1>
-        <p>Are you sure you want to log out?</p>
-        <div class="clearfix">
-          <button type="button" id="no_btn" class="no_btn">No</button>
-          <button type="button" id="logout_btn" class="logout_btn">Log out</button>
-        </div>
-      </div>
-    </form>
-  </div>
+    <div id="logout_modal" class="modal">
+        <form class="modal-content" action="/action_page.php">
+            <div class="container">
+                <h1>Kijelentkezés</h1>
+                <p>Biztosan ki akar jelentkezni?</p>
+                <div class="clearfix">
+                    <button type="button" id="no_btn" class="no_btn">Mégse</button>
+                    <button type="button" id="logout_btn" class="logout_btn">Kijelentkezés</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
-  <!-- Delete User -->
-  <div id="delete_user_modal" class="modal">
-    <form class="modal-content" action="/action_page.php">
-      <div class="container">
-        <h1>Delete Account</h1>
-        <p class="warning">Warning: This action is irreversible and will remove all your data.</p>
-        <div class="clearfix">
-          <button type="button" id="cancel_btn" class="no_btn">Cancel</button>
-          <button type="button" id="delete_btn" class="logout_btn">Delete</button>
-        </div>
-      </div>
-    </form>
-  </div>
+    <!-- Delete User -->
+    <div id="delete_user_modal" class="modal">
+        <form class="modal-content" action="/action_page.php">
+            <div class="container">
+                <h1>Fiók törlése</h1>
+                <p class="warning">Figyelem: A törlés végleges, minden adata el fog veszni.</p>
+                <div class="clearfix">
+                    <button type="button" id="cancel_btn" class="no_btn">Mégse</button>
+                    <button type="button" id="delete_btn" class="logout_btn">Törlés</button>
+                </div>
+            </div>
+        </form>
+    </div>
 
   <script src="./analytics.js"></script>
   <script src="./token_validation.js"></script>

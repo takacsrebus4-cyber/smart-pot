@@ -1,35 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Smart Plant Monitor</title>
+    <title>Bejelentkezés | Plant Monitor Pro</title>
     <link rel="stylesheet" href="login_style.css">
 </head>
 <body>
     <div class="login-container">
         <div class="logo">
-            <h1>Welcome!</h1>
-            <p>Sign in to view your plants</p>
+            <h1>Üdvözli a<br>Plant Monitor Pro!</h1>
+            <p>Jelentkezzen be a növényei megtekintéséhez!</p>
         </div>
-        
         <form id="loginForm">
             <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter your username" required>
-                <div class="error-message" id="usernameError">Please enter a valid username</div>
+                <label for="username">Felhasználónév</label>
+                <input type="text" id="username" placeholder="Felhasználónév" required>
+                <div class="error-message" id="usernameError">Adjon meg egy valós felhasználónevet</div>
             </div>
-            
             <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter your password" required>
-                <div class="error-message" id="passwordError">Wrog password</div>
+                <label for="password">Jelszó</label>
+                <input type="password" id="password" placeholder="Jelszó" required>
+                <div class="error-message" id="passwordError">Hibás jelszó</div>
             </div>
-            
-            <button class="login-btn" id="button">Sign In</button>
-            
+            <button class="login-btn" id="login-btn">Bejelentkezés</button>
             <div class="signup-link">
-                Don't have an account? <a href="./upload_user.html">Sign up</a>
+                <a href="./upload_user.html">Új fiók létrehozása</a>
             </div>
         </form>
     </div>

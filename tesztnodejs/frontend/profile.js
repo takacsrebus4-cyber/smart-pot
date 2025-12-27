@@ -11,4 +11,4 @@ document.getElementById("dropdown").addEventListener("click", function (e) {
     }
 });
 
-document.getElementById("logged-in-user").innerHTML = "Logged in as <strong>" + localStorage.getItem('username') + "</strong>";
+document.getElementById("logged-in-user").innerHTML = "Bejelentkezve: <strong>" + localStorage.getItem('username') + "</strong>";

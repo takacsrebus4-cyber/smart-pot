@@ -9,7 +9,7 @@ document.body.onload = function () {
 //token validation on dashboard click
 document.getElementById("dashboard").addEventListener("click", function () {
     if (localStorage.getItem("accessToken") === undefined || localStorage.getItem("accessToken") === null) {
-        alert("No access token");
+        alert("Nincs hozzáférési engedélye");
         window.location.href = "./login.html";
     }
     fetch(authHost + '/validateToken', {
@@ -24,7 +24,7 @@ document.getElementById("dashboard").addEventListener("click", function () {
     }).then(res => res.json()).then(response => {
         if (response.tokenValid == false || response.tokenValid == undefined) {
             if (response.refreshTokenValid == false) {
-                alert("Both access and refresh tokens have expired. Please log in again.");
+                alert("Hozzáférés ideje lejárt.");
                 window.location.href = "./login.html";
             }
             else {
@@ -39,12 +39,10 @@ document.getElementById("dashboard").addEventListener("click", function () {
                         refreshToken: localStorage.getItem("refreshToken")
                     }),
                 }).then(res => res.json()).then(response => {
-                    //console.log("New access and refresh tokens generated.");
                     localStorage.setItem("accessToken", response.accessToken);
                     localStorage.setItem("refreshToken", response.refreshToken);
                 });
             }
         }
-        //console.log("Token valid.");
     });
 });

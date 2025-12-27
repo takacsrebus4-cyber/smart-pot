@@ -673,3 +673,16 @@ p.warning {
     cursor: pointer;
     transition: var(--transition);
 }
+
+.metric-timestamp {
+    font-size: 0.75rem;
+    color: var(--light-text);
+    margin-top: 5px;
+    text-align: right;
+}
+
+.no-data {
+    font-size: 18px;
+    text-align: left;
+    margin-top: 20px;
+}

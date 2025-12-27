@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlantMonitor Pro | Smart Plant Monitoring</title>
+    <title>Növényeim | Smart Plant Monitor Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -21,14 +21,14 @@
                 <span>PlantMonitor Pro</span>
             </div>
             <ul class="nav-links">
-                <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
-                <li><a href="./my_plants.html" class="active"><i class="fas fa-leaf"></i> My Plants</a></li>
-                <li><a href="./analytics.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
-                <li><a href="#" id="dropdown"><i class="fas fa-user-circle"></i> Profile</a></li>
+                <!--  <li><a href="./dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>  -->
+                <li><a href="./my_plants.html" class="active"><i class="fas fa-leaf"></i> Növényeim</a></li>
+                <li><a href="./analytics.html"><i class="fas fa-chart-line"></i> Statisztika</a></li>
+                <li><a href="#" id="dropdown"><i class="fas fa-user-circle"></i> Profil</a></li>
                 <div id="dropdown-container" class="dropdown-container">
                     <li id="logged-in-user"></li>
-                    <button id="logout"> Log Out</button>
-                    <button id="delete_user"> Delete Account</button>
+                    <button id="logout"> Kijelentkezés</button>
+                    <button id="delete_user"> Fiók törlése</button>
                 </div>
                 </li>
             </ul>
@@ -38,138 +38,19 @@
         <main class="main-content">
             <!-- Header -->
             <header class="header">
-                <h1>My Plants</h1>
+                <h1>Növényeim</h1>
                 <div>
-                    <a href="./upload_current_plant.html" class="add-plant"><i class="fas fa-plus"></i> Add New
-                        Plant</a>
-                    <a href="./delete_current_plant.html" class="delete-plant"><i class="fas fa-minus"></i> Delete
-                        Plant</a>
+                    <a href="./upload_current_plant.html" class="add-plant"><i class="fas fa-plus"></i> Új növény hozzáadása</a>
+                    <a href="./delete_current_plant.html" class="delete-plant"><i class="fas fa-minus"></i> Növény törlése</a>
                 </div>
             </header>
 
+            <button id="load-current-plants-btn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Növények betöltése</button>
+            <br><br>
+
             <!-- Plants Grid -->
             <section>
-                <div class="plants-grid">
-                    <!-- Plant Card 1 -->
-                    <div class="plant-card">
-                        <div class="plant-header">
-                            <h3 class="plant-name">Monstera Deliciosa</h3>
-                            <span class="plant-status status-healthy">Healthy</span>
-                        </div>
-                        <div class="plant-metrics">
-                            <div class="metric">
-                                <div class="metric-value">72°F</div>
-                                <div class="metric-label">Temperature</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">65%</div>
-                                <div class="metric-label">Humidity</div>
-                            </div>
-                        </div>
-                        <div class="mb-1">
-                            <div class="metric-label">Soil Moisture</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 70%"></div>
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <div class="metric-label">Light Exposure</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 85%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Plant Card 2 -->
-                    <div class="plant-card caution">
-                        <div class="plant-header">
-                            <h3 class="plant-name">Snake Plant</h3>
-                            <span class="plant-status status-caution">Needs Water</span>
-                        </div>
-                        <div class="plant-metrics">
-                            <div class="metric">
-                                <div class="metric-value">68°F</div>
-                                <div class="metric-label">Temperature</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">60%</div>
-                                <div class="metric-label">Humidity</div>
-                            </div>
-                        </div>
-                        <div class="mb-1">
-                            <div class="metric-label">Soil Moisture</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill caution" style="width: 25%"></div>
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <div class="metric-label">Light Exposure</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 45%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Plant Card 3 -->
-                    <div class="plant-card warning">
-                        <div class="plant-header">
-                            <h3 class="plant-name">Fiddle Leaf Fig</h3>
-                            <span class="plant-status status-warning">High Temp</span>
-                        </div>
-                        <div class="plant-metrics">
-                            <div class="metric">
-                                <div class="metric-value" style="color: var(--warning);">89°F</div>
-                                <div class="metric-label">Temperature</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">75%</div>
-                                <div class="metric-label">Humidity</div>
-                            </div>
-                        </div>
-                        <div class="mb-1">
-                            <div class="metric-label">Soil Moisture</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 60%"></div>
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <div class="metric-label">Light Exposure</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 70%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Plant Card 4 -->
-                    <div class="plant-card">
-                        <div class="plant-header">
-                            <h3 class="plant-name">Peace Lily</h3>
-                            <span class="plant-status status-healthy">Healthy</span>
-                        </div>
-                        <div class="plant-metrics">
-                            <div class="metric">
-                                <div class="metric-value">70°F</div>
-                                <div class="metric-label">Temperature</div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-value">80%</div>
-                                <div class="metric-label">Humidity</div>
-                            </div>
-                        </div>
-                        <div class="mb-1">
-                            <div class="metric-label">Soil Moisture</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 75%"></div>
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <div class="metric-label">Light Exposure</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 60%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="plants-grid"></div>
             </section>
         </main>
     </div>
@@ -178,11 +59,11 @@
     <div id="logout_modal" class="modal">
         <form class="modal-content" action="/action_page.php">
             <div class="container">
-                <h1>Log out</h1>
-                <p>Are you sure you want to log out?</p>
+                <h1>Kijelentkezés</h1>
+                <p>Biztosan ki akar jelentkezni?</p>
                 <div class="clearfix">
-                    <button type="button" id="no_btn" class="no_btn">No</button>
-                    <button type="button" id="logout_btn" class="logout_btn">Log out</button>
+                    <button type="button" id="no_btn" class="no_btn">Mégse</button>
+                    <button type="button" id="logout_btn" class="logout_btn">Kijelentkezés</button>
                 </div>
             </div>
         </form>
@@ -192,11 +73,11 @@
     <div id="delete_user_modal" class="modal">
         <form class="modal-content" action="/action_page.php">
             <div class="container">
-                <h1>Delete Account</h1>
-                <p class="warning">Warning: This action is irreversible and will remove all your data.</p>
+                <h1>Fiók törlése</h1>
+                <p class="warning">Figyelem: A törlés végleges, minden adata el fog veszni.</p>
                 <div class="clearfix">
-                    <button type="button" id="cancel_btn" class="no_btn">Cancel</button>
-                    <button type="button" id="delete_btn" class="logout_btn">Delete</button>
+                    <button type="button" id="cancel_btn" class="no_btn">Mégse</button>
+                    <button type="button" id="delete_btn" class="logout_btn">Törlés</button>
                 </div>
             </div>
         </form>
@@ -207,6 +88,7 @@
     <script src="./logout.js"></script>
     <script src="./delete_user.js"></script>
     <script src="./profile.js"></script>
+    <script src="./my_plants.js"></script>
 </body>
 
 </html>

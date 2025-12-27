@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Pot - CG8WXK</title>
+    <title>Növény hozzáadás | Plant Monitor Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="login_style.css">
 
 </head>
@@ -12,19 +13,19 @@
 <body id="dashboard" class="dashboard-container">
     <div class="login-container">
         <div class="logo">
-            <h1>Add a new plant!</h1>
-            <p>Choose the name of the plant you want to add.</p>
+            <h1>Új növény hozzáadása!</h1>
+            <p>Válassza ki milyen növényt szeretne hozzáadni.</p>
         </div>
 
         <form>
-            <button type="button" id="loadbtn" class="loadbtn">Load Plants</button>
+            <button type="button" id="loadbtn" class="loadbtn"><i class="fas fa-arrows-rotate"></i> Növények betöltése</button>
             <select name="plantSelect" id="plantSelect" class="plantSelect">
-                <option value="" selected="selected">Select plant to add</option>
+                <option value="" selected="selected">Válassza ki a növényét</option>
             </select>
             <br><br>
             <div class="clearfix">
-                <button type="button" id="cancel" class="cancel_btn">Cancel</button>
-                <input type="submit" id="upload" class="confirm_btn" value="Upload">
+                <button type="button" id="cancel" class="cancel_btn">Mégse</button>
+                <input type="submit" id="upload" class="confirm_btn" value="Hozzáadás">
             </div>
         </form>
     </div>

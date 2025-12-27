@@ -19,7 +19,6 @@ app.post("/validateToken", validateToken, (req, res) => {
 });
 
 function validateToken(req, res, next) {
-  console.log(req.body)
   const token = req.body.accessToken;
   const refreshToken = req.body.refreshToken;
 

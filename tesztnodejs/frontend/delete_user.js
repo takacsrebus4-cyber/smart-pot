@@ -90,21 +90,20 @@ document.getElementById("delete_btn").addEventListener("click", async (e) => {
                             }).then(res => res.json()).then(response => {
                                 console.log(response);
                                 if (response.success == true) {
-                                    alert("User deleted successfully. Redirecting to login page...");
+                                    alert("Felhasználó sikeresen törölve. Visszairányítás a bejelenkezéshez...");
                                     plant_ids.length = 0;
-                                    console.log(plant_ids);
                                     localStorage.clear();
                                     window.location.href = "./login.html";
                                 } else {
-                                    alert("Error deleting user.");
+                                    alert("Probléma a felhasználó törlésénél.");
                                 }
                             });
                         } else {
-                            alert("Error deleting current plants.");
+                            alert("Probléma a növények törléséneél.");
                         }
                     });
                 } else {
-                    alert("Error deleting data.");
+                    alert("Probléma az adatok törlésénél.");
                 }
             });
         }

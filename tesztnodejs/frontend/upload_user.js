@@ -13,8 +13,11 @@ document.getElementById("button").addEventListener("click", async (e) => {
     }).then(res => res.json()).then(response => {
         console.log(response);
         if (response.valid == true) {
-            alert("User uploaded successfully, redirecting to login page.");
+            alert("Fiók sikeresen létrehozva. Visszairányítás a bejelentkezéshez...");
             window.location.href = "./login.html";
+        }
+        else{
+            alert("Hiba a fiók létrehozásakor. Kérjük, próbálja újra.");
         }
     });
 });

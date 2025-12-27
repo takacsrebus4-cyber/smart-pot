@@ -1,8 +1,13 @@
+int plant_id = 2;    //The id of the plant you are  observing, will be moved to frontend
+
+
+
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
 #include <Wire.h>
 #include <BH1750.h>
+#include <LiquidCrystal.h>
 
 #include "WiFiS3.h"
 #include "WiFiSSLClient.h"
@@ -14,11 +19,26 @@ char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 
 int status = WL_IDLE_STATUS;
-char server[] = "smartpot.taki02.org";
+char server[] = "192.168.0.120";
+int port = 3000;
 
-WiFiSSLClient client;
+//WiFiSSLClient client;
+WiFiClient client;
 
 BH1750 lightMeter;
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+byte degree[8]={
+  B00111,
+  B00101,
+  B00111,
+  B00000,
+  B00000,
+  B00000,
+  B00000,
+  B00000
+};
 
 #define DHTPIN 7
 #define DHTTYPE DHT22
@@ -29,16 +49,9 @@ const int AirValue = 670;    //determined by measuring the avarege value measure
 const int WaterValue = 430;  ////determined by measuring the avarege value measured over 2 hours while sensor in water
 int soilMoistureValue = 0;
 int mappedSoilMoisture = 0;
+int soilMoisturePercent = 0;
 int timer = 0;
-float prev_light = 0;
-float prev_temperature = 0;
-float prev_humidity = 0;
-float prev_moisture = 0;
-float marginOfError = 0.2;  //marging of error is 20%
-float light_diff = 0;       //the difference between the current and previously measured light
-float temperature_diff = 0;
-float humidity_diff = 0;
-float moisture_diff = 0;
+float light_amount = 0;
 
 uint32_t delayMS;
 
@@ -47,6 +60,9 @@ uint32_t delayMS;
 void setup() {
 
   Serial.begin(115200);
+  lcd.begin(16,2);
+  lcd.createChar(0, degree);
+
   while (!Serial) {
     ;
   }
@@ -74,74 +90,106 @@ void setup() {
 
 void loop() {
 
-  delay(5000);
-
-  //increase timer
-  timer = timer + 5000;
+  lcd.clear();
 
   // Get temperature event and print its value.
   sensors_event_t event;
   dht.temperature().getEvent(&event);
   float temperature = event.temperature;
+  dht.temperature().getEvent(&event);
+
   if (isnan(temperature)) {
-    Serial.println(F("Error reading temperature!"));
-  } else {
+    lcd.println(F("Error reading temperature!"));
+    Serial.println("Error reading temperature!");
+  }
+  else {
     Serial.print(F("Temp: "));
     Serial.print(temperature);
     Serial.println(F("°C"));
+
+    lcd.setCursor(0, 0);
+    lcd.print("Temp: ");
+    lcd.print(temperature);
+    lcd.write(byte(0));
+    lcd.print("C");
   }
 
   // Get humidity event and print its value.
   dht.humidity().getEvent(&event);
   float humidity = event.relative_humidity;
   if (isnan(humidity)) {
+    lcd.println(F("Error reading humidity!"));
     Serial.println(F("Error reading humidity!"));
-  } else {
+  }
+  else {
     Serial.print(F("Humi: "));
     Serial.print(humidity);
     Serial.println("%");
+
+    lcd.setCursor(0, 2);
+    lcd.print("Humi: ");
+    lcd.print(humidity);
+    lcd.print("%");
   }
 
-  //measurng light
-  float light = lightMeter.readLightLevel();
+  delay(5000);
+  lcd.clear();
+
+  //measuring light
+  float light_intensity = lightMeter.readLightLevel();
   Serial.print("Light: ");
-  Serial.print(light);
+  Serial.print(light_intensity);
   Serial.println(" lx");
 
-  //measureing soil moisture
+  lcd.setCursor(0, 0);
+  lcd.print("Light: ");
+  lcd.print(light_intensity);
+  lcd.print("lx");
+
+  //measuring soil moisture
   int soilMoistureValue;
   soilMoistureValue = analogRead(0);
   Serial.println("Analog: " + String(soilMoistureValue));
 
   mappedSoilMoisture = map(soilMoistureValue, AirValue, WaterValue, 0, 1023);
 
-  if (mappedSoilMoisture > 100) {
-    mappedSoilMoisture = 100;
+  if (mappedSoilMoisture > 1023) {
+    mappedSoilMoisture = 1023;
   } else if (mappedSoilMoisture < 0) {
     mappedSoilMoisture = 0;
+  }
+
+  soilMoisturePercent = map(soilMoistureValue, AirValue, WaterValue, 0, 100);
+
+  if (soilMoisturePercent > 100) {
+    soilMoisturePercent = 100;
+  } else if (soilMoisturePercent < 0) {
+    soilMoisturePercent = 0;
   }
 
   Serial.print("Soil Moisture: ");
   Serial.println(mappedSoilMoisture);
 
+  lcd.setCursor(0, 2);
+  lcd.print("Moisture: ");
+  lcd.print(soilMoisturePercent);
+  lcd.print("%");
 
+  
+  delay(5000);
 
+  timer = timer + 10000;
 
-
-
-  Serial.println("Timer: " + String(timer));
-
-  //send data to server after 1 minute or if the difference between current and previously measured data exceeds the marging of error
-  if (timer >= 900000) {
-    upload_data(light, mappedSoilMoisture, temperature, humidity);
-    timer = 0;
+  if(light_intensity >= 500){  //500lx is the minimum light required for low light plants
+    light_amount = light_amount + 0.0028;  //10 seconds ~ 0.0028 hours
   }
 
-
-  prev_light = light;
-  prev_temperature = temperature;
-  prev_humidity = humidity;
-  prev_moisture = mappedSoilMoisture;
+  //send data to server after 15 minutes
+  if (timer >= 150000) {
+    upload_data(light_intensity, mappedSoilMoisture, temperature, humidity, light_amount);
+    timer = 0;
+    light_amount = 0;
+  }
 }
 
 
@@ -199,19 +247,23 @@ void read_response() {
 
 
 
-void upload_data(float light, int moisture, float temperature, float humidity) {
+void upload_data(float light_intensity, int moisture, float temperature, float humidity, float light_amount) {
 
-  String light_st = String(light);
+  String light_intensity_st = String(light_intensity);
+  String light_amount_st = String(light_amount);
   String moisture_st = String(moisture);
   String temperature_st = String(temperature);
   String humidity_st = String(humidity);
 
-  String jsonData = "{\"light\":" + light_st + ",\"moisture\":" + moisture_st + ",\"temperature\":" + temperature_st + ",\"humidity\":" + humidity_st + ",\"current_plant_id\":3}";
+  String jsonData = "{\"light_intensity\":" + light_intensity_st + ",
+  \"light_amount\":" + light_amount_st + ",\"soil_moisture\":" + moisture_st + ",
+  \"temperature\":" + temperature_st + ",\"humidity\":" + humidity_st + ",
+  \"current_plant_id\":" + plant_id + "}";
 
 
   Serial.println("\nStarting connection to server...");
 
-  if (client.connect(server, 443)) {
+  if (client.connect(server, port)) {
     Serial.println("connected to server");
 
     Serial.println(jsonData);
