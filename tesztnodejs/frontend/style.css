@@ -686,3 +686,23 @@ p.warning {
     text-align: left;
     margin-top: 20px;
 }
+
+.loadbtn:hover {
+    background-color: var(--secondary-green);
+}
+
+/* Style for export button */
+.exportbtn {
+    background-color: var(--primary-green);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.exportbtn:hover {
+    background-color: var(--secondary-green);
+}

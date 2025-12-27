@@ -13,7 +13,7 @@ const e = require("express");
 const jwt = require("jsonwebtoken");
 const fastcsv = require("fast-csv");
 const fs = require("fs");
-const ws = fs.createWriteStream("weekly_data_export.csv");
+const ws = fs.createWriteStream('C:/Users/takac/Downloads/weekly_data_export.csv');
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({
@@ -246,7 +246,6 @@ app.post("/query/daily_summary", async (req, res) => {
           FROM ${table}
           WHERE current_plant_id=${plant_id}
           GROUP BY DATE(timestamp);`, async (err, result) => {
-        console.log(result);
         res.json(result);
         connection.release();
       });
@@ -259,26 +258,37 @@ app.post("/query/daily_summary", async (req, res) => {
 
 //export data from weekly_data table
 //authorized for normal users
-app.post("/export/weekly_data", async (req, res) => {
+app.post("/export_weekly_data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
+  console.log(req.body);
 
   //token validation check
-  if (validateToken(req.headers['authorization'])) {
+  if (validateToken(req.headers['authorization']) && req.body.plant_id) {
     db.getConnection(async (err, connection) => {
       if (err) throw (err)
       var table = "weekly_data"
       var plant_id = req.body.plant_id;
       connection.query(`SELECT * FROM ${table} WHERE current_plant_id=${plant_id};`, async (err, result) => {
+        console.log(result);
         connection.release();
+
+        
+
         var jsonData = JSON.parse(JSON.stringify(result));
+
+        console.log("jsonData: ", jsonData);
 
         fastcsv.write(jsonData, { headers: true })
           .on("finish", function () {
             console.log("Write to CSV successfully!");
+            res.json({ exportSuccess: true });
           })
           .pipe(ws);
       });
     });
+  }
+  else if (!req.body.plant_id) {
+    res.json({ exportSuccess: false });
   }
   else {
     res.json({ tokenValid: false });
@@ -579,12 +589,10 @@ app.post("/current_plant_list", async (req, res) => {
   if (validateToken(req.headers['authorization'])) {
     db.getConnection(async (err, connection) => {
       if (err) throw (err);
-      console.log(req.body);
       var table = "current_plants"
       var userid = req.body.userid;
       connection.query(`SELECT * FROM ${table} WHERE user_id=${userid};`, async (err, result) => {
         connection.release();
-        console.log(result);
         res.json(result);
       });
     });
