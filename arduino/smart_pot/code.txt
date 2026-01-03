@@ -24,8 +24,7 @@ char server[] = "192.168.0.120";
 int port = 3000;
 
 //WiFiSSLClient client;
-WiFiClient client_for_data_upload;
-WiFiClient client_for_arduino_registration;
+WiFiClient client;
 
 BH1750 lightMeter;
 
@@ -57,7 +56,6 @@ float light_amount = 0;
 
 uint32_t delayMS;
 byte mac[6];
-String mac_address = "";
 
 void setup() {
 
@@ -86,6 +84,14 @@ void setup() {
   Wire.begin();
   lightMeter.begin();
   dht.begin();
+}
+
+
+
+
+void loop() {
+
+  lcd.clear();
 
   WiFi.macAddress(mac);
   Serial.print("MAC: ");
@@ -101,19 +107,11 @@ void setup() {
   Serial.print(":");
   Serial.println(mac[0], HEX);
 
-  mac_address = String(mac[5], HEX) + ":" + String(mac[4], HEX) + ":" + String(mac[3], HEX) + ":" + String(mac[2], HEX) + ":" + String(mac[1], HEX) + ":" + String(mac[0], HEX);
+  String mac_address = String(mac[5], HEX) + ":" + String(mac[4], HEX) + ":" + String(mac[3], HEX) + ":" + String(mac[2], HEX) + ":" + String(mac[1], HEX) + ":" + String(mac[0], HEX);
 
   Serial.println("MAC Address: " + mac_address);
-}
 
-
-
-
-void loop() {
-
-  lcd.clear();
-
-  
+  registerArduino("{\"mac_address\":\"" + mac_address +\"}");
 
   // Get temperature event and print its value.
   sensors_event_t event;
@@ -154,10 +152,6 @@ void loop() {
   }
 
   delay(5000);
-
-  //register arduino if needed
-  registerArduino("{\"mac_address\":\"" + mac_address + "\"}");
-
   lcd.clear();
 
   //measuring light
@@ -204,15 +198,13 @@ void loop() {
   delay(5000);
 
   timer = timer + 10000;
-  Serial.print("Timer: ");
-  Serial.println(timer);
 
   if (light_intensity >= 500) {            //500lx is the minimum light required for low light plants
     light_amount = light_amount + 0.0028;  //10 seconds ~ 0.0028 hours
   }
 
   //send data to server after 15 minutes
-  if (timer >= 900000) {
+  if (timer >= 150000) {
     upload_data(light_intensity, mappedSoilMoisture, temperature, humidity, light_amount, mac_address);
     timer = 0;
     light_amount = 0;
@@ -261,7 +253,7 @@ void printWifiStatus() {
 
 
 
-void read_response(WiFiClient client) {
+void read_response() {
   /* -------------------------------------------------------------------------- */
   uint32_t received_data_num = 0;
   while (client.available()) {
@@ -279,7 +271,6 @@ void read_response(WiFiClient client) {
 
 void upload_data(float light_intensity, int moisture, float temperature, float humidity, float light_amount, String mac_address) {
 
-
   String light_intensity_st = String(light_intensity);
   String light_amount_st = String(light_amount);
   String moisture_st = String(moisture);
@@ -291,65 +282,78 @@ void upload_data(float light_intensity, int moisture, float temperature, float h
 
   Serial.println("\nStarting connection to server...");
 
-  if (client_for_data_upload.connect(server, port)) {
+  if (client.connect(server, port)) {
     Serial.println("connected to server");
 
     Serial.println(jsonData);
 
     // Make a HTTP request:
-    client_for_data_upload.println("POST /upload/data HTTP/1.1");
-    client_for_data_upload.println("Host: " + String(server));
-    client_for_data_upload.println("Content-Type: application/json");
-    client_for_data_upload.println("Connection: close");
-    client_for_data_upload.print("Content-Length: ");
-    client_for_data_upload.println(jsonData.length());
-    client_for_data_upload.println();
+    client.println("POST /upload/data HTTP/1.1");
+    client.println("Host: " + String(server));
+    client.println("Content-Type: application/json");
+    client.println("Connection: close");
+    client.print("Content-Length: ");
+    client.println(jsonData.length());
+    client.println();
 
     // Send JSON body
-    client_for_data_upload.println(jsonData);
+    client.println(jsonData);
 
     Serial.println("Request sent");
     Serial.println("Waiting for response...");
-    read_response(client_for_data_upload);
+    read_response();
 
-    client_for_data_upload.flush();
-    client_for_data_upload.stop();
+    client.flush();
+    client.stop();
 
   } else {
     Serial.println("connection failed");
+    if (WiFi.disconnect()) {
+      Serial.println("Wifi disconnected");
+    } else {
+      Serial.println("Wifi disconnect failed");
+    }
+    delay(10000);
+    connectToWifi();
   }
 }
 
 
-
-void registerArduino(String json_mac_address){
+void registerArduino(String mac_address){
   Serial.println("\nStarting connection to server...");
 
-  if (client_for_arduino_registration.connect(server, port)) {
+  if (client.connect(server, port)) {
     Serial.println("connected to server");
 
-    Serial.println(json_mac_address);
+    Serial.println(mac_address);
 
     // Make a HTTP request:
-    client_for_arduino_registration.println("POST /registerArduino HTTP/1.1");
-    client_for_arduino_registration.println("Host: " + String(server));
-    client_for_arduino_registration.println("Content-Type: application/json");
-    client_for_arduino_registration.println("Connection: close");
-    client_for_arduino_registration.print("Content-Length: ");
-    client_for_arduino_registration.println(json_mac_address.length());
-    client_for_arduino_registration.println();
+    client.println("POST /registerArduino HTTP/1.1");
+    client.println("Host: " + String(server));
+    client.println("Content-Type: application/json");
+    client.println("Connection: close");
+    client.print("Content-Length: ");
+    client.println(mac_address.length());
+    client.println();
 
     // Send JSON body
-    client_for_arduino_registration.println(json_mac_address);
+    client.println(mac_address);
 
     Serial.println("Request sent");
     Serial.println("Waiting for response...");
-    read_response(client_for_arduino_registration);
+    read_response();
 
-    client_for_arduino_registration.flush();
-    client_for_arduino_registration.stop();
+    client.flush();
+    client.stop();
 
   } else {
     Serial.println("connection failed");
+    if (WiFi.disconnect()) {
+      Serial.println("Wifi disconnected");
+    } else {
+      Serial.println("Wifi disconnect failed");
+    }
+    delay(10000);
+    connectToWifi();
   }
 }

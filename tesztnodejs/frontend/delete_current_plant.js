@@ -30,11 +30,14 @@ document.getElementById("loadbtn").addEventListener("click", async (e) => {
             localStorage.clear();
             window.location.href = "./login.html";
         }
+
+        var current_plants = response.current_plants;
+
         // Populate the select dropdown with the retrieved plants
-        else if (response.length > 0) {
+        if (current_plants.length > 0) {
             const plantSelect = document.getElementById("plantSelect");
             plantSelect.innerHTML = ""; // Clear existing options
-            response.forEach(plant => {
+            current_plants.forEach(plant => {
                 const option = document.createElement("option");
                 option.value = plant.id;
                 option.text = plant.id + " - " + plant.plant_name;
@@ -65,7 +68,7 @@ document.getElementById("delete").addEventListener("click", async (e) => {
             plant_ids: plant_ids,
         }),
     }).then(res => res.json()).then(response => {
-        console.log(response);
+        console.log("Delete data response: " + response);
 
         // Handle token expiration
         if (response.tokenValid == false) {
@@ -95,6 +98,7 @@ document.getElementById("delete").addEventListener("click", async (e) => {
                 }
                 else if (response.success == true) {
                     alert("Növény sikeresen törölve.");
+                    document.getElementById("plantSelect").remove(document.getElementById("plantSelect").selectedIndex);
                 }
                 else {
                     alert("Probléma a növény törlésekor.");

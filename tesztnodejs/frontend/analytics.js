@@ -15,20 +15,21 @@ document.getElementById("load-current-plants-btn").addEventListener("click", fun
         }),
     }).then(res => res.json()).then(response => {
         console.log(response);
+        var current_plants = response.current_plants;
 
         // Handle token expiration
-        if (response.tokenValid == false) {
+        if (current_plants.tokenValid == false) {
             alert("You are not authorized to perform this action. Please log in.");
             localStorage.clear();
             window.location.href = "./login.html";
         }
         // Populate the select dropdown with the retrieved plants
-        else if (response.length > 0) {
+        else if (current_plants.length > 0) {
             const plantSelect = document.getElementById("plantSelect");
             plantSelect.innerHTML = ""; // Clear existing options
-            response.forEach(plant => {
+            current_plants.forEach(plant => {
                 const option = document.createElement("option");
-                option.value = plant.id;
+                option.value = plant.id + " - " + plant.plant_name;
                 option.text = plant.id + " - " + plant.plant_name;
                 plantSelect.appendChild(option);
             });
@@ -50,7 +51,8 @@ document.getElementById("plantSelect").addEventListener("change", function (e) {
 
 function displayAnalyticsSection() {
 
-    var plant_name = document.getElementById("plantSelect").value.split(" - ")[1]
+    var plant_name = document.getElementById("plantSelect").value.split(" - ")[1];
+    console.log("Plant name: " + plant_name);
 
     var dates = [];
 
@@ -85,12 +87,13 @@ function displayAnalyticsSection() {
             plant_name: plant_name
         }),
     }).then(res => res.json()).then(response => {
-        console.log(response);
         if (response.tokenValid == false) {
             alert("Jelentkezzen be.");
             localStorage.clear();
             window.location.href = "./login.html";
         }
+        console.log("Plant data:");
+        console.log(response);
 
         var analyticsSection = document.getElementsByClassName("analytics-section");
 

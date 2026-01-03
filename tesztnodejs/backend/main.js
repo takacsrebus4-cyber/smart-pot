@@ -7,13 +7,14 @@ require("dotenv").config({ path: 'C:/Users/takac/OneDrive/Asztali gép/smart pot
 const app = express();
 const port = process.env.PORT;
 let refreshTokens = [];
+let mac_address_to_plant_id = [];
 const cors = require('cors');
 const { table, Console } = require("console");
-const e = require("express");
 const jwt = require("jsonwebtoken");
 const fastcsv = require("fast-csv");
 const fs = require("fs");
 const ws = fs.createWriteStream('C:/Users/takac/Downloads/weekly_data_export.csv');
+const current_plant_id = null;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({
@@ -29,7 +30,7 @@ const db = mysql.createPool({
   port: process.env.DB_PORT
 })
 
-app.listen(port,'0.0.0.0', () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
 
@@ -109,6 +110,8 @@ app.post("/refreshToken", (req, res) => {
 //authorized for normal users
 app.post("/query/plant_data", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
+
+  console.log(req.body);
 
   //token validation check
   if (validateToken(req.headers['authorization'])) {
@@ -256,43 +259,19 @@ app.post("/query/daily_summary", async (req, res) => {
   }
 });
 
-//export data from weekly_data table
-//authorized for normal users
-app.post("/export_weekly_data", async (req, res) => {
+//query arduino mac addresses
+app.get("/query/arduino_mac_addresses", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
-  console.log(req.body);
 
   //token validation check
-  if (validateToken(req.headers['authorization']) && req.body.plant_id) {
-    db.getConnection(async (err, connection) => {
-      if (err) throw (err)
-      var table = "weekly_data"
-      var plant_id = req.body.plant_id;
-      connection.query(`SELECT * FROM ${table} WHERE current_plant_id=${plant_id};`, async (err, result) => {
-        console.log(result);
-        connection.release();
-
-        
-
-        var jsonData = JSON.parse(JSON.stringify(result));
-
-        console.log("jsonData: ", jsonData);
-
-        fastcsv.write(jsonData, { headers: true })
-          .on("finish", function () {
-            console.log("Write to CSV successfully!");
-            res.json({ exportSuccess: true });
-          })
-          .pipe(ws);
-      });
-    });
-  }
-  else if (!req.body.plant_id) {
-    res.json({ exportSuccess: false });
+  if (validateToken(req.headers['authorization'])) {
+    console.log("MAC addresses to plant ID mapping: ", mac_address_to_plant_id);
+    res.json(mac_address_to_plant_id);
   }
   else {
     res.json({ tokenValid: false });
   }
+
 });
 
 
@@ -354,12 +333,19 @@ app.post("/upload/plant", async (req, res) => {
 app.post("/upload/current_plant", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
 
+  console.log("Req body for uloading current plant: ", req.body);
+
   //token existence check
   if (validateToken(req.headers['authorization'])) {
     var current_plant_table = "current_plants";
     var plants_data_table = "plants_data";
     var plant_name = req.body.plant_name;
     var user_id = req.body.userid;
+    var mac_address = null;
+
+    if (req.body.mac_address && req.body.mac_address != "0") {
+      mac_address = req.body.mac_address;
+    }
     db.getConnection(async (err, connection) => {
       if (err) throw (err)
       connection.query(`SELECT * FROM ${plants_data_table} WHERE name="${plant_name}";`, async (err, result) => {
@@ -378,6 +364,10 @@ app.post("/upload/current_plant", async (req, res) => {
                 (plant_name, user_id) VALUES("${plant_name}", ${user_id});`, async (err, result) => {
               connection.release();
               if (result.affectedRows > 0) {
+                connection.query(`SELECT id FROM ${current_plant_table} ORDER BY id DESC LIMIT 1;`, async (err, result) => {
+                  connection.release();
+                  assignArduinoToPlant(mac_address, result[0].id);
+                });
                 res.json({ success: true });
               }
               else {
@@ -435,7 +425,15 @@ app.post("/upload/data", async (req, res) => {
     var soil_moisture = req.body.soil_moisture;
     var temperature = req.body.temperature;
     var humidity = req.body.humidity;
-    var current_plant_id = 2; //hardcoded for testing purposes
+    var mac_address = req.body.mac_address;
+    var current_plant_id = 0;
+
+    for (let i = 0; i < mac_address_to_plant_id.length; i++) {
+      if (mac_address_to_plant_id[i].mac_address === mac_address) {
+        current_plant_id = mac_address_to_plant_id[i].plant_id;
+        break;
+      }
+    }
 
     connection.query(`DELETE FROM ${table} WHERE timestamp < NOW() - INTERVAL 7 DAY;`, async (err, result) => {
       connection.release();
@@ -444,21 +442,28 @@ app.post("/upload/data", async (req, res) => {
       console.log("Old data deleted from weekly_data");
     });
 
-    connection.query(`INSERT INTO ${table}
+
+    if (current_plant_id == null || current_plant_id == 0) {
+      console.log("Current plant ID not set, cannot upload data");
+      res.json({ success: false });
+    }
+    else {
+      connection.query(`INSERT INTO ${table}
         (timestamp, light_amount, light_intensity, soil_moisture, temperature, humidity, current_plant_id)
         VALUES(
           "${timestamp}", ${light_amount}, ${light_intensity}, ${soil_moisture}, ${temperature}, ${humidity}, ${current_plant_id}
         )`, async (err, result) => {
-      connection.release();
-      console.log("Result: ");
-      console.log(result);
-      if (result != undefined && result.affectedRows > 0) {
-        res.json({ success: true });
-      }
-      else {
-        res.json({ success: false });
-      }
-    });
+        connection.release();
+        console.log("Result: ");
+        console.log(result);
+        if (result != undefined && result.affectedRows > 0) {
+          res.json({ success: true });
+        }
+        else {
+          res.json({ success: false });
+        }
+      });
+    }
   });
 });
 
@@ -519,7 +524,7 @@ app.delete("/delete/current_plant", async (req, res) => {
   if (validateToken(req.headers['authorization'])) {
     db.getConnection(async (err, connection) => {
       if (err) throw (err);
-      //console.log(req.body);
+      console.log(req.body);
       var table = "current_plants"
       var plant_ids = "";
       for (i = 0; i < req.body.plant_ids.length; i++) {
@@ -531,8 +536,14 @@ app.delete("/delete/current_plant", async (req, res) => {
       if (plant_ids != "") {
         connection.query(`DELETE FROM ${table} WHERE id IN (${plant_ids});`, async (err, result) => {
           connection.release();
-          //console.log(result);
+          console.log(result);
           if (result != undefined) {
+            for (let i = 0; i < mac_address_to_plant_id.length; i++) {
+              if (mac_address_to_plant_id[i].plant_id == req.body.plant_ids[i]) {
+                mac_address_to_plant_id[i].plant_id = 0;
+              }
+            }
+            console.log("Updated MAC addresses to plant ID mapping: ", mac_address_to_plant_id);
             res.json({ success: true });
           }
           else {
@@ -580,6 +591,10 @@ app.delete("/delete/user", async (req, res) => {
   }
 });
 
+
+
+
+
 //lists plants belonging to the user
 //authorized for normal users
 app.post("/current_plant_list", async (req, res) => {
@@ -593,7 +608,7 @@ app.post("/current_plant_list", async (req, res) => {
       var userid = req.body.userid;
       connection.query(`SELECT * FROM ${table} WHERE user_id=${userid};`, async (err, result) => {
         connection.release();
-        res.json(result);
+        res.json({ current_plants: result, mac_address_to_plant_id: mac_address_to_plant_id });
       });
     });
   }
@@ -602,9 +617,75 @@ app.post("/current_plant_list", async (req, res) => {
   }
 });
 
+//export data from weekly_data table
+//authorized for normal users
+app.post("/export_weekly_data", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  console.log(req.body);
+
+  //token validation check
+  if (validateToken(req.headers['authorization']) && req.body.plant_id) {
+    db.getConnection(async (err, connection) => {
+      if (err) throw (err)
+      var table = "weekly_data"
+      var plant_id = req.body.plant_id;
+      connection.query(`SELECT * FROM ${table} WHERE current_plant_id=${plant_id};`, async (err, result) => {
+        console.log(result);
+        connection.release();
 
 
 
+        var jsonData = JSON.parse(JSON.stringify(result));
+
+        console.log("jsonData: ", jsonData);
+
+        fastcsv.write(jsonData, { headers: true })
+          .on("finish", function () {
+            console.log("Write to CSV successfully!");
+            res.json({ exportSuccess: true });
+          })
+          .pipe(ws);
+      });
+    });
+  }
+  else if (!req.body.plant_id) {
+    res.json({ exportSuccess: false });
+  }
+  else {
+    res.json({ tokenValid: false });
+  }
+});
+
+//register arduino mac address
+app.post("/registerArduino", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  //console.log(req.body);
+  var alreadyRegistered = false;
+
+  for (let i = 0; i < mac_address_to_plant_id.length; i++) {
+    if (mac_address_to_plant_id[i].mac_address === req.body.mac_address) {
+      alreadyRegistered = true;
+      break;
+    }
+  }
+
+  if (!alreadyRegistered) {
+    mac_address_to_plant_id.push({ mac_address: req.body.mac_address, plant_id: 0 });
+    console.log("Registered Arduino MAC addresses: ", mac_address_to_plant_id);
+    res.json({ registerSuccess: true });
+  }
+  else {
+    res.json({ registerSuccess: false });
+  }
+});
+
+
+
+
+
+//functions
+
+//token validation
 function validateToken(header) {
 
   var token = "";
@@ -629,4 +710,17 @@ function validateToken(header) {
       return false;
     }
   }
+}
+
+//assign plant to arduino mac address
+function assignArduinoToPlant(mac_address, plant_id) {
+  console.log("Assigning plant ID " + plant_id + " to MAC address " + mac_address);
+
+  mac_address_to_plant_id.forEach((item) => {
+    if (item.mac_address === mac_address) {
+      item.plant_id = plant_id;
+    }
+  });
+  console.log("MAC addresses to plant ID mapping: ", mac_address_to_plant_id);
+
 }
