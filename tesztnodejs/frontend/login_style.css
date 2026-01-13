@@ -25,7 +25,6 @@
         
 body {
   background-image: url('C:/Users/takac/OneDrive/Asztali gép/smart pot/tesztnodejs/images/login_bg.jpg');
-  /*background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);*/
   display: flex;
   justify-content: center;
   align-items: center;
@@ -90,14 +89,6 @@ body {
   outline: none;
 }
         
-.remember-forgot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-        
 .login-btn {
   background:  var(--primary-green);
   color: white;
@@ -137,21 +128,6 @@ body {
   font-size: 14px;
   margin-top: 5px;
   display: none;
-}
-        
-@media (max-width: 480px) {
-  .login-container {
-    padding: 30px 20px;
-  }
-            
-  .remember-forgot {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-            
-  .forgot-password {
-    margin-top: 10px;
-  }
 }
 
 .userinfo-modal {

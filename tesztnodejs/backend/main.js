@@ -40,10 +40,9 @@ app.post("/login", async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   db.getConnection(async (err, connection) => {
     if (err) throw (err)
-    var table = "users";
     var username = req.body.username;
     var password = req.body.password;
-    connection.query(`SELECT * FROM ${table} WHERE name="${username}"`, async (err, result) => {
+    connection.query(`SELECT * FROM users WHERE name="${username}"`, async (err, result) => {
       connection.release();
       if (result.length == 0) {
         res.json({ userNotFound: true });
@@ -337,8 +336,6 @@ app.post("/upload/current_plant", async (req, res) => {
 
   //token existence check
   if (validateToken(req.headers['authorization'])) {
-    var current_plant_table = "current_plants";
-    var plants_data_table = "plants_data";
     var plant_name = req.body.plant_name;
     var user_id = req.body.userid;
     var mac_address = null;
@@ -348,7 +345,7 @@ app.post("/upload/current_plant", async (req, res) => {
     }
     db.getConnection(async (err, connection) => {
       if (err) throw (err)
-      connection.query(`SELECT * FROM ${plants_data_table} WHERE name="${plant_name}";`, async (err, result) => {
+      connection.query(`SELECT * FROM plants_data WHERE name="${plant_name}";`, async (err, result) => {
         connection.release();
         if (result.length == 0) {
           console.log("Plant not found in plants_data table, cannot upload current plant");
@@ -360,11 +357,11 @@ app.post("/upload/current_plant", async (req, res) => {
           db.getConnection(async (err, connection) => {
             console.log("Inserting current plant into current_plants table");
             if (err) throw (err)
-            connection.query(`INSERT INTO ${current_plant_table}
+            connection.query(`INSERT INTO current_plants
                 (plant_name, user_id) VALUES("${plant_name}", ${user_id});`, async (err, result) => {
               connection.release();
               if (result.affectedRows > 0) {
-                connection.query(`SELECT id FROM ${current_plant_table} ORDER BY id DESC LIMIT 1;`, async (err, result) => {
+                connection.query(`SELECT id FROM current_plants ORDER BY id DESC LIMIT 1;`, async (err, result) => {
                   connection.release();
                   assignArduinoToPlant(mac_address, result[0].id);
                 });
@@ -627,13 +624,10 @@ app.post("/export_weekly_data", async (req, res) => {
   if (validateToken(req.headers['authorization']) && req.body.plant_id) {
     db.getConnection(async (err, connection) => {
       if (err) throw (err)
-      var table = "weekly_data"
       var plant_id = req.body.plant_id;
-      connection.query(`SELECT * FROM ${table} WHERE current_plant_id=${plant_id};`, async (err, result) => {
+      connection.query(`SELECT * FROM weekly_data WHERE current_plant_id=${plant_id};`, async (err, result) => {
         console.log(result);
         connection.release();
-
-
 
         var jsonData = JSON.parse(JSON.stringify(result));
 

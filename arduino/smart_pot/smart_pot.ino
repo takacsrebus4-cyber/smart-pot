@@ -113,7 +113,8 @@ void loop() {
 
   lcd.clear();
 
-  
+  //register arduino if needed
+  registerArduino("{\"mac_address\":\"" + mac_address + "\"}");
 
   // Get temperature event and print its value.
   sensors_event_t event;
@@ -154,9 +155,6 @@ void loop() {
   }
 
   delay(5000);
-
-  //register arduino if needed
-  registerArduino("{\"mac_address\":\"" + mac_address + "\"}");
 
   lcd.clear();
 
@@ -288,15 +286,14 @@ void upload_data(float light_intensity, int moisture, float temperature, float h
 
   String jsonData = "{\"light_intensity\":" + light_intensity_st + ",\"light_amount\":" + light_amount_st + ",\"soil_moisture\":" + moisture_st + ",\"temperature\":" + temperature_st + ",\"humidity\":" + humidity_st + ",\"mac_address\":\"" + mac_address + "\"}";
 
+  Serial.println(jsonData);
 
-  Serial.println("\nStarting connection to server...");
+  Serial.println("\nKapcsolódás a szerverher...");
 
   if (client_for_data_upload.connect(server, port)) {
-    Serial.println("connected to server");
+    Serial.println("sikeres kapcsolódás");
 
-    Serial.println(jsonData);
-
-    // Make a HTTP request:
+    // HTTP request:
     client_for_data_upload.println("POST /upload/data HTTP/1.1");
     client_for_data_upload.println("Host: " + String(server));
     client_for_data_upload.println("Content-Type: application/json");
@@ -305,7 +302,7 @@ void upload_data(float light_intensity, int moisture, float temperature, float h
     client_for_data_upload.println(jsonData.length());
     client_for_data_upload.println();
 
-    // Send JSON body
+    // JSON body elküldése
     client_for_data_upload.println(jsonData);
 
     Serial.println("Request sent");
@@ -316,7 +313,7 @@ void upload_data(float light_intensity, int moisture, float temperature, float h
     client_for_data_upload.stop();
 
   } else {
-    Serial.println("connection failed");
+    Serial.println("kapcsolódás sikertelen");
   }
 }
 
